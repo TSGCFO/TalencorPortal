@@ -23,10 +23,10 @@ export default function HomePage() {
                 Recruiter Dashboard
               </Button>
             </Link>
-            <Link href="/apply/demo">
+            <Link href="/recruiter">
               <Button variant="outline" size="lg" className="border-2 border-primary text-primary hover:bg-primary hover:text-white px-8 py-4">
                 <FileText className="mr-3 h-5 w-5" />
-                Demo Application Form
+                View Applications
               </Button>
             </Link>
           </div>

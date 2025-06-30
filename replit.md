@@ -85,7 +85,13 @@ The application is configured for multiple deployment scenarios:
 
 ## Changelog
 
-- June 30, 2025. Initial setup
+- June 30, 2025: Complete TalentCore Staffing portal implementation
+  - Built secure token-based application system
+  - Implemented 8-step application form with validation
+  - Added recruiter dashboard with link generation
+  - Integrated aptitude test with automatic scoring
+  - Set up PostgreSQL database with Drizzle ORM
+  - Deployed production-ready employment portal
 
 ## User Preferences
 

@@ -294,7 +294,7 @@ export default function RecruiterDashboard() {
                     <Link href={`/apply/${link.token}`}>
                       <Button size="sm" variant="outline" className="mt-3">
                         <Eye className="mr-1 h-3 w-3" />
-                        Preview Application Form
+                        View Application Form
                       </Button>
                     </Link>
                   </div>
