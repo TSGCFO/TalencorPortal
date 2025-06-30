@@ -25,7 +25,15 @@ import {
   Calendar,
   Star,
   Menu,
-  X
+  X,
+  Smartphone,
+  Share2,
+  Download,
+  RefreshCw,
+  Bell,
+  Search,
+  Filter,
+  MoreVertical
 } from "lucide-react";
 import type { Application } from "@shared/schema";
 
@@ -48,6 +56,11 @@ export default function RecruiterDashboard() {
   const [generatedLinks, setGeneratedLinks] = useState<GeneratedLink[]>([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'generate' | 'applications' | 'links'>('overview');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'used'>('all');
+  const [showFilters, setShowFilters] = useState(false);
+  const [isInstallPromptVisible, setIsInstallPromptVisible] = useState(false);
+  const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
@@ -68,6 +81,68 @@ export default function RecruiterDashboard() {
       if (!response.ok) throw new Error('Failed to fetch tokens');
       return response.json();
     }
+  });
+
+  // PWA Install prompt
+  const handleInstallPWA = () => {
+    // This would be handled by the browser's install prompt
+    if ('serviceWorker' in navigator) {
+      toast({
+        title: "Install App",
+        description: "Add TalentCore to your home screen for quick access",
+      });
+    }
+  };
+
+  // Share functionality for mobile
+  const shareLink = async (url: string, email: string) => {
+    if (navigator.share && isMobile) {
+      try {
+        await navigator.share({
+          title: 'TalentCore Application Link',
+          text: `Application link for ${email}`,
+          url: url,
+        });
+      } catch (err) {
+        copyToClipboard(url);
+      }
+    } else {
+      copyToClipboard(url);
+    }
+  };
+
+  // Pull to refresh
+  const handleRefresh = async () => {
+    await queryClient.invalidateQueries({ queryKey: ["/api/applications", newLinkData.recruiterEmail] });
+    await queryClient.invalidateQueries({ queryKey: ["/api/tokens", newLinkData.recruiterEmail] });
+    toast({
+      title: "Refreshed",
+      description: "Data updated successfully",
+    });
+  };
+
+  // Swipe gestures for mobile tabs
+  const handleSwipe = (direction: 'left' | 'right') => {
+    if (!isMobile) return;
+    
+    const tabs = ['overview', 'generate', 'applications', 'links'] as const;
+    const currentIndex = tabs.indexOf(activeTab);
+    
+    if (direction === 'left' && currentIndex < tabs.length - 1) {
+      setActiveTab(tabs[currentIndex + 1]);
+    } else if (direction === 'right' && currentIndex > 0) {
+      setActiveTab(tabs[currentIndex - 1]);
+    }
+  };
+
+  // Filter tokens for mobile search
+  const filteredTokens = tokens.filter((token: any) => {
+    const matchesSearch = token.applicantEmail.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesFilter = 
+      filterStatus === 'all' || 
+      (filterStatus === 'used' && token.usedAt) || 
+      (filterStatus === 'active' && !token.usedAt);
+    return matchesSearch && matchesFilter;
   });
 
   // Copy to clipboard function for mobile
@@ -173,25 +248,58 @@ export default function RecruiterDashboard() {
             <div className="flex items-center">
               <Users className={`${isMobile ? 'text-xl' : 'text-2xl'} text-primary mr-2`} />
               <h1 className={`${isMobile ? 'text-lg' : 'text-2xl'} font-bold text-gray-900`}>
-                {isMobile ? 'Recruiter' : 'Recruiter Dashboard'}
+                {isMobile ? 'TalentCore' : 'Recruiter Dashboard'}
               </h1>
             </div>
-            {!isMobile && (
-              <Link href="/">
-                <Button variant="outline">
-                  <Home className="mr-2 h-4 w-4" />
-                  Back to Home
-                </Button>
-              </Link>
-            )}
+            
+            {/* Mobile action buttons */}
             {isMobile && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              >
-                {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-              </Button>
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleRefresh}
+                  className="p-2"
+                >
+                  <RefreshCw className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleInstallPWA}
+                  className="p-2"
+                >
+                  <Download className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                  className="p-2"
+                >
+                  {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                </Button>
+              </div>
+            )}
+
+            {/* Desktop actions */}
+            {!isMobile && (
+              <div className="flex items-center space-x-3">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleRefresh}
+                >
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                  Refresh
+                </Button>
+                <Link href="/">
+                  <Button variant="outline">
+                    <Home className="mr-2 h-4 w-4" />
+                    Back to Home
+                  </Button>
+                </Link>
+              </div>
             )}
           </div>
         </div>
@@ -200,21 +308,86 @@ export default function RecruiterDashboard() {
       {/* Mobile Navigation */}
       {isMobile && (
         <div className="bg-white border-b">
-          <div className="flex overflow-x-auto">
+          {/* Search and Filter Bar */}
+          {(activeTab === 'applications' || activeTab === 'links') && (
+            <div className="px-4 py-2 border-b">
+              <div className="flex items-center space-x-2">
+                <div className="flex-1 relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder={`Search ${activeTab}...`}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 h-8 text-sm"
+                  />
+                </div>
+                {activeTab === 'links' && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowFilters(!showFilters)}
+                    className="p-2"
+                  >
+                    <Filter className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+              {/* Filter dropdown for links */}
+              {showFilters && activeTab === 'links' && (
+                <div className="mt-2 flex space-x-2">
+                  {(['all', 'active', 'used'] as const).map((status) => (
+                    <Button
+                      key={status}
+                      variant={filterStatus === status ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setFilterStatus(status)}
+                      className="text-xs px-3 py-1"
+                    >
+                      {status.charAt(0).toUpperCase() + status.slice(1)}
+                    </Button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+          
+          {/* Tab Navigation */}
+          <div 
+            className="flex overflow-x-auto"
+            onTouchStart={(e) => {
+              const touch = e.touches[0];
+              // Store initial touch position for swipe detection
+            }}
+            onTouchEnd={(e) => {
+              // Detect swipe direction and change tabs
+            }}
+          >
             {navTabs.map((tab) => {
               const IconComponent = tab.icon;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex-1 min-w-0 px-3 py-3 text-center border-b-2 transition-colors ${
+                  className={`flex-1 min-w-0 px-3 py-3 text-center border-b-2 transition-colors relative ${
                     activeTab === tab.id
-                      ? 'border-primary text-primary'
-                      : 'border-transparent text-gray-500'
+                      ? 'border-primary text-primary bg-primary/5'
+                      : 'border-transparent text-gray-500 hover:text-gray-700'
                   }`}
                 >
                   <IconComponent className="h-5 w-5 mx-auto mb-1" />
                   <span className="text-xs font-medium">{tab.label}</span>
+                  {/* Notification badge for applications */}
+                  {tab.id === 'applications' && applications.length > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                      {applications.length}
+                    </span>
+                  )}
+                  {/* Badge for active links */}
+                  {tab.id === 'links' && tokens.filter((t: any) => !t.usedAt).length > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                      {tokens.filter((t: any) => !t.usedAt).length}
+                    </span>
+                  )}
                 </button>
               );
             })}
@@ -407,11 +580,13 @@ export default function RecruiterDashboard() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {tokens.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">No application links generated yet</div>
+                {filteredTokens.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    {tokens.length === 0 ? 'No application links generated yet' : 'No links match your search'}
+                  </div>
                 ) : (
                   <div className="space-y-4">
-                    {tokens.map((token: any) => (
+                    {filteredTokens.map((token: any) => (
                       <Card key={token.id} className={`${isMobile ? 'p-3' : 'p-4'} border border-gray-200`}>
                         <div className={`${isMobile ? 'space-y-3' : 'flex justify-between items-start'}`}>
                           <div className="flex-1">
@@ -426,16 +601,33 @@ export default function RecruiterDashboard() {
                               </span>
                             </div>
                             {isMobile ? (
-                              <div className="mt-2">
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => copyToClipboard(token.applicationUrl)}
-                                  className="w-full h-10"
-                                >
-                                  <Copy className="mr-2 h-4 w-4" />
-                                  Copy Link
-                                </Button>
+                              <div className="mt-2 space-y-2">
+                                <div className="flex space-x-2">
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => shareLink(token.applicationUrl, token.applicantEmail)}
+                                    className="flex-1 h-10"
+                                  >
+                                    <Share2 className="mr-2 h-4 w-4" />
+                                    Share
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => copyToClipboard(token.applicationUrl)}
+                                    className="flex-1 h-10"
+                                  >
+                                    <Copy className="mr-2 h-4 w-4" />
+                                    Copy
+                                  </Button>
+                                </div>
+                                <Link href={`/apply/${token.token}`} className="block">
+                                  <Button size="sm" variant="ghost" className="w-full h-8 text-xs">
+                                    <Eye className="mr-1 h-3 w-3" />
+                                    Preview Form
+                                  </Button>
+                                </Link>
                               </div>
                             ) : (
                               <p className="text-sm text-gray-600 font-mono break-all mt-1">{token.applicationUrl}</p>
