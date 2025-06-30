@@ -1,0 +1,92 @@
+# TalentCore Staffing Portal
+
+## Overview
+
+This is a comprehensive employment application portal built for TalentCore Staffing, designed to streamline the recruitment process through secure, token-based application forms. The system provides a modern, multi-step application experience with built-in aptitude testing and document management capabilities.
+
+## System Architecture
+
+The application follows a full-stack architecture with clear separation between client and server concerns:
+
+**Frontend**: React-based SPA with TypeScript, using Vite for development and building
+**Backend**: Express.js API server with RESTful endpoints
+**Database**: PostgreSQL with Drizzle ORM for type-safe database operations
+**Styling**: Tailwind CSS with shadcn/ui component library
+**Routing**: Client-side routing with Wouter
+**State Management**: TanStack Query for server state management
+
+## Key Components
+
+### Frontend Architecture
+- **Component Structure**: Modular React components with TypeScript
+- **UI Framework**: shadcn/ui components built on Radix UI primitives
+- **Styling**: Tailwind CSS with custom design tokens and dark mode support
+- **Form Management**: Multi-step form wizard with progress tracking
+- **State Management**: React Query for API state, local state for form data
+
+### Backend Architecture
+- **API Layer**: Express.js with structured route handlers
+- **Database Layer**: Drizzle ORM with PostgreSQL
+- **Authentication**: Token-based secure application links
+- **File Storage**: Document upload system with validation
+- **Business Logic**: Aptitude scoring, application processing
+
+### Database Schema
+The system uses a relational database with the following key entities:
+- **Applications**: Complete applicant information and responses
+- **Application Tokens**: Secure, time-limited access tokens
+- **Application Documents**: File attachments and metadata
+- **Recruiters**: User management for recruitment staff
+
+## Data Flow
+
+1. **Token Generation**: Recruiters generate secure application links
+2. **Application Access**: Candidates access forms via unique tokens
+3. **Multi-Step Form**: Progressive data collection across 8 steps
+4. **Document Upload**: Secure file handling with validation
+5. **Data Persistence**: Real-time form state management
+6. **Submission Processing**: Complete application review and scoring
+
+## External Dependencies
+
+### Core Dependencies
+- **@neondatabase/serverless**: Neon PostgreSQL database connection
+- **drizzle-orm**: Type-safe database ORM
+- **@tanstack/react-query**: Server state management
+- **@radix-ui/react-***: Accessible UI component primitives
+- **tailwindcss**: Utility-first CSS framework
+- **wouter**: Lightweight client-side routing
+
+### Development Tools
+- **vite**: Fast development server and build tool
+- **typescript**: Type safety and developer experience
+- **tsx**: TypeScript execution for server development
+- **esbuild**: Fast bundling for production builds
+
+## Deployment Strategy
+
+The application is configured for multiple deployment scenarios:
+
+**Development**: 
+- Vite dev server for frontend with HMR
+- tsx for backend development with auto-restart
+- Replit-specific development tooling integration
+
+**Production**:
+- Static asset generation via Vite build
+- Server bundling with esbuild
+- Environment-based configuration management
+- Database migrations via Drizzle Kit
+
+**Database Management**:
+- Schema-first approach with Drizzle
+- Migration system for schema changes
+- Connection pooling for production scalability
+
+## Changelog
+
+- June 30, 2025. Initial setup
+
+## User Preferences
+
+Preferred communication style: Simple, everyday language.

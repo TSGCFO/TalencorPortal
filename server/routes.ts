@@ -1,0 +1,135 @@
+import type { Express } from "express";
+import { createServer, type Server } from "http";
+import { storage } from "./storage";
+import { z } from "zod";
+import { insertApplicationSchema, insertApplicationTokenSchema } from "@shared/schema";
+import crypto from "crypto";
+
+const generateLinkSchema = z.object({
+  applicantEmail: z.string().email(),
+  recruiterEmail: z.string().email(),
+});
+
+const validateTokenSchema = z.object({
+  token: z.string(),
+});
+
+function generateSecureToken(): string {
+  return 'tk_' + crypto.randomBytes(16).toString('hex');
+}
+
+function calculateAptitudeScore(answers: Record<string, string>): number {
+  const correctAnswers = {
+    aptitude1: "60",
+    aptitude2: "Nail",
+    aptitude3: "3 hours",
+    aptitude4: "32",
+    aptitude5: "Ocean"
+  };
+  
+  let score = 0;
+  Object.entries(correctAnswers).forEach(([question, correct]) => {
+    if (answers[question] === correct) {
+      score++;
+    }
+  });
+  
+  return score;
+}
+
+export async function registerRoutes(app: Express): Promise<Server> {
+  // Generate secure application link
+  app.post("/api/generate-link", async (req, res) => {
+    try {
+      const { applicantEmail, recruiterEmail } = generateLinkSchema.parse(req.body);
+      
+      const token = generateSecureToken();
+      const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+      
+      await storage.createApplicationToken({
+        token,
+        recruiterEmail,
+        applicantEmail,
+        expiresAt,
+      });
+      
+      const applicationUrl = `${process.env.VITE_APP_URL || 'http://localhost:5000'}/apply/${token}`;
+      
+      res.json({
+        success: true,
+        token,
+        applicationUrl,
+        expiresAt,
+      });
+    } catch (error) {
+      console.error('Generate link error:', error);
+      res.status(500).json({ error: 'Failed to generate link' });
+    }
+  });
+
+  // Validate token
+  app.post("/api/validate-token", async (req, res) => {
+    try {
+      const { token } = validateTokenSchema.parse(req.body);
+      
+      const tokenData = await storage.getApplicationToken(token);
+      if (!tokenData || tokenData.expiresAt < new Date()) {
+        return res.status(404).json({ error: 'Invalid or expired token' });
+      }
+      
+      res.json({ valid: true, tokenData });
+    } catch (error) {
+      console.error('Validate token error:', error);
+      res.status(500).json({ error: 'Failed to validate token' });
+    }
+  });
+
+  // Submit application
+  app.post("/api/applications", async (req, res) => {
+    try {
+      const applicationData = insertApplicationSchema.parse(req.body);
+      
+      // Validate token
+      const tokenData = await storage.getApplicationToken(applicationData.tokenId);
+      if (!tokenData || tokenData.expiresAt < new Date()) {
+        return res.status(400).json({ error: 'Invalid or expired token' });
+      }
+      
+      // Calculate aptitude score
+      const aptitudeScore = calculateAptitudeScore(applicationData.aptitudeAnswers as Record<string, string>);
+      
+      const application = await storage.createApplication({
+        ...applicationData,
+        aptitudeScore,
+        recruiterEmail: tokenData.recruiterEmail,
+      });
+      
+      // Mark token as used
+      await storage.markTokenAsUsed(applicationData.tokenId);
+      
+      res.json({ success: true, application });
+    } catch (error) {
+      console.error('Submit application error:', error);
+      res.status(500).json({ error: 'Failed to submit application' });
+    }
+  });
+
+  // Get applications for recruiter
+  app.get("/api/applications", async (req, res) => {
+    try {
+      const recruiterEmail = req.query.recruiterEmail as string;
+      if (!recruiterEmail) {
+        return res.status(400).json({ error: 'Recruiter email is required' });
+      }
+      
+      const applications = await storage.getApplicationsByRecruiter(recruiterEmail);
+      res.json(applications);
+    } catch (error) {
+      console.error('Get applications error:', error);
+      res.status(500).json({ error: 'Failed to get applications' });
+    }
+  });
+
+  const httpServer = createServer(app);
+  return httpServer;
+}
