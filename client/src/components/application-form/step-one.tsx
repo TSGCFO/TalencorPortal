@@ -17,6 +17,59 @@ export default function StepOne({ formData, updateFormData, onNext }: StepOnePro
     updateFormData({ [field]: value });
   };
 
+  const handleSinChange = (value: string) => {
+    // Only allow digits and format as XXX-XXX-XXX
+    const digitsOnly = value.replace(/\D/g, '');
+    if (digitsOnly.length <= 9) {
+      let formatted = digitsOnly;
+      if (digitsOnly.length > 3) {
+        formatted = `${digitsOnly.slice(0, 3)}-${digitsOnly.slice(3)}`;
+      }
+      if (digitsOnly.length > 6) {
+        formatted = `${digitsOnly.slice(0, 3)}-${digitsOnly.slice(3, 6)}-${digitsOnly.slice(6)}`;
+      }
+      updateFormData({ sinNumber: formatted });
+    }
+  };
+
+  const handlePhoneChange = (field: keyof InsertApplication, value: string) => {
+    // Only allow digits and format as (XXX) XXX-XXXX
+    const digitsOnly = value.replace(/\D/g, '');
+    if (digitsOnly.length <= 10) {
+      let formatted = digitsOnly;
+      if (digitsOnly.length > 3) {
+        formatted = `(${digitsOnly.slice(0, 3)}) ${digitsOnly.slice(3)}`;
+      }
+      if (digitsOnly.length > 6) {
+        formatted = `(${digitsOnly.slice(0, 3)}) ${digitsOnly.slice(3, 6)}-${digitsOnly.slice(6)}`;
+      }
+      updateFormData({ [field]: formatted });
+    }
+  };
+
+  const validateStep = () => {
+    const required = ['fullName', 'dateOfBirth', 'sinNumber', 'streetAddress', 'city', 'province', 'postalCode'];
+    const missing = required.filter(field => !formData[field as keyof InsertApplication]);
+    
+    if (missing.length > 0) {
+      return false;
+    }
+
+    // Validate SIN format (9 digits)
+    const sinDigits = (formData.sinNumber || '').replace(/\D/g, '');
+    if (sinDigits.length !== 9) {
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleNext = () => {
+    if (validateStep()) {
+      onNext();
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -52,7 +105,8 @@ export default function StepOne({ formData, updateFormData, onNext }: StepOnePro
               id="sinNumber"
               placeholder="XXX-XXX-XXX"
               value={formData.sinNumber || ""}
-              onChange={(e) => handleInputChange("sinNumber", e.target.value)}
+              onChange={(e) => handleSinChange(e.target.value)}
+              maxLength={11}
               required
             />
           </div>
@@ -120,7 +174,7 @@ export default function StepOne({ formData, updateFormData, onNext }: StepOnePro
         </div>
 
         <div className="flex justify-end">
-          <Button onClick={onNext}>
+          <Button onClick={handleNext} disabled={!validateStep()}>
             Next
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>

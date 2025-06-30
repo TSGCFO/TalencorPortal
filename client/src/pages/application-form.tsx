@@ -156,10 +156,9 @@ export default function ApplicationForm() {
             <p className="text-gray-600 mb-4">
               This application link is invalid or has expired. Please contact your recruiter for a new link.
             </p>
-            <Button onClick={() => setLocation("/")}>
-              <Home className="mr-2 h-4 w-4" />
-              Return to Home
-            </Button>
+            <p className="text-sm text-gray-500">
+              Please contact the recruiter for assistance.
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -195,10 +194,9 @@ export default function ApplicationForm() {
                   <li>• Keep an eye on your email for updates</li>
                 </ul>
               </div>
-              <Button onClick={() => setLocation("/")}>
-                <Home className="mr-2 h-4 w-4" />
-                Return to Home
-              </Button>
+              <p className="text-sm text-gray-500">
+                You may now close this window.
+              </p>
             </CardContent>
           </Card>
         </div>
