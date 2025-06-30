@@ -47,8 +47,20 @@ export default function StepOne({ formData, updateFormData, onNext }: StepOnePro
     }
   };
 
+  const handlePostalCodeChange = (value: string) => {
+    // Format Canadian postal code as A1A 1A1
+    const alphanumeric = value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+    if (alphanumeric.length <= 6) {
+      let formatted = alphanumeric;
+      if (alphanumeric.length > 3) {
+        formatted = `${alphanumeric.slice(0, 3)} ${alphanumeric.slice(3)}`;
+      }
+      updateFormData({ postalCode: formatted });
+    }
+  };
+
   const validateStep = () => {
-    const required = ['fullName', 'dateOfBirth', 'sinNumber', 'streetAddress', 'city', 'province', 'postalCode'];
+    const required = ['fullName', 'dateOfBirth', 'sinNumber', 'streetAddress', 'city', 'province', 'postalCode', 'majorIntersection'];
     const missing = required.filter(field => !formData[field as keyof InsertApplication]);
     
     if (missing.length > 0) {
@@ -58,6 +70,12 @@ export default function StepOne({ formData, updateFormData, onNext }: StepOnePro
     // Validate SIN format (9 digits)
     const sinDigits = (formData.sinNumber || '').replace(/\D/g, '');
     if (sinDigits.length !== 9) {
+      return false;
+    }
+
+    // Validate postal code format (6 characters)
+    const postalCode = (formData.postalCode || '').replace(/\s/g, '');
+    if (postalCode.length !== 6) {
       return false;
     }
 
@@ -157,7 +175,8 @@ export default function StepOne({ formData, updateFormData, onNext }: StepOnePro
               id="postalCode"
               placeholder="A1A 1A1"
               value={formData.postalCode || ""}
-              onChange={(e) => handleInputChange("postalCode", e.target.value)}
+              onChange={(e) => handlePostalCodeChange(e.target.value)}
+              maxLength={7}
               required
             />
           </div>
