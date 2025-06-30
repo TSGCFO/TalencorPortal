@@ -23,6 +23,7 @@ export interface IStorage {
   // Application Tokens
   createApplicationToken(token: InsertApplicationToken): Promise<ApplicationToken>;
   getApplicationToken(token: string): Promise<ApplicationToken | undefined>;
+  getApplicationTokensByRecruiter(recruiterEmail: string): Promise<ApplicationToken[]>;
   markTokenAsUsed(token: string): Promise<void>;
   
   // Recruiters
@@ -69,6 +70,15 @@ export class DatabaseStorage implements IStorage {
       .from(applicationTokens)
       .where(eq(applicationTokens.token, token));
     return result || undefined;
+  }
+
+  async getApplicationTokensByRecruiter(recruiterEmail: string): Promise<ApplicationToken[]> {
+    const results = await db
+      .select()
+      .from(applicationTokens)
+      .where(eq(applicationTokens.recruiterEmail, recruiterEmail))
+      .orderBy(desc(applicationTokens.createdAt));
+    return results;
   }
 
   async markTokenAsUsed(token: string): Promise<void> {

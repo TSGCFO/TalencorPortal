@@ -39,12 +39,22 @@ export default function RecruiterDashboard() {
     }
   });
 
+  const { data: tokens = [] } = useQuery({
+    queryKey: ["/api/tokens", newLinkData.recruiterEmail],
+    queryFn: async () => {
+      const response = await fetch(`/api/tokens/${encodeURIComponent(newLinkData.recruiterEmail)}`);
+      if (!response.ok) throw new Error('Failed to fetch tokens');
+      return response.json();
+    }
+  });
+
   const generateLinkMutation = useMutation({
     mutationFn: async (data: { applicantEmail: string; recruiterEmail: string }) => {
       const response = await apiRequest("POST", "/api/generate-link", data);
       return response.json();
     },
     onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/tokens", newLinkData.recruiterEmail] });
       const newLink: GeneratedLink = {
         id: Date.now(),
         token: data.token,
@@ -260,38 +270,40 @@ export default function RecruiterDashboard() {
         </Card>
 
         {/* Generated Links */}
-        {generatedLinks.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <LinkIcon className="mr-3 text-blue-600" />
-                Generated Application Links
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <LinkIcon className="mr-3 text-blue-600" />
+              Generated Application Links
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {tokens.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">No application links generated yet</div>
+            ) : (
               <div className="space-y-4">
-                {generatedLinks.map((link) => (
-                  <div key={link.id} className="p-4 border border-gray-200 rounded-lg">
+                {tokens.map((token: any) => (
+                  <div key={token.id} className="p-4 border border-gray-200 rounded-lg">
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
-                        <p className="font-medium text-gray-900">{link.applicantEmail}</p>
-                        <p className="text-sm text-gray-600 font-mono break-all">{link.link}</p>
+                        <p className="font-medium text-gray-900">{token.applicantEmail}</p>
+                        <p className="text-sm text-gray-600 font-mono break-all">{token.applicationUrl}</p>
                         <p className="text-xs text-gray-500 mt-1">
-                          Generated: {new Date(link.generatedAt).toLocaleString()}
+                          Generated: {new Date(token.createdAt).toLocaleString()}
                         </p>
                       </div>
                       <div className="text-right ml-4">
                         <span className={`px-2 py-1 rounded text-xs ${
-                          link.used ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
+                          token.usedAt ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
                         }`}>
-                          {link.used ? 'Used' : 'Active'}
+                          {token.usedAt ? 'Used' : 'Active'}
                         </span>
                         <p className="text-xs text-gray-500 mt-1">
-                          Expires: {new Date(link.expiresAt).toLocaleDateString()}
+                          Expires: {new Date(token.expiresAt).toLocaleDateString()}
                         </p>
                       </div>
                     </div>
-                    <Link href={`/apply/${link.token}`}>
+                    <Link href={`/apply/${token.token}`}>
                       <Button size="sm" variant="outline" className="mt-3">
                         <Eye className="mr-1 h-3 w-3" />
                         View Application Form
@@ -300,9 +312,9 @@ export default function RecruiterDashboard() {
                   </div>
                 ))}
               </div>
-            </CardContent>
-          </Card>
-        )}
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

@@ -70,6 +70,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get generated tokens for a recruiter
+  app.get("/api/tokens/:recruiterEmail", async (req, res) => {
+    try {
+      const { recruiterEmail } = req.params;
+      const tokens = await storage.getApplicationTokensByRecruiter(recruiterEmail);
+      
+      const baseUrl = process.env.REPLIT_DOMAINS 
+        ? `https://${process.env.REPLIT_DOMAINS}` 
+        : 'http://localhost:5000';
+      
+      const tokensWithUrls = tokens.map(token => ({
+        ...token,
+        applicationUrl: `${baseUrl}/apply/${token.token}`
+      }));
+      
+      res.json(tokensWithUrls);
+    } catch (error) {
+      console.error('Get tokens error:', error);
+      res.status(500).json({ error: 'Failed to fetch tokens' });
+    }
+  });
+
   // Validate token
   app.post("/api/validate-token", async (req, res) => {
     try {
