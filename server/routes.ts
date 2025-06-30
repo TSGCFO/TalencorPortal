@@ -53,7 +53,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         expiresAt,
       });
       
-      const applicationUrl = `${process.env.VITE_APP_URL || 'http://localhost:5000'}/apply/${token}`;
+      const baseUrl = process.env.REPLIT_DOMAINS 
+        ? `https://${process.env.REPLIT_DOMAINS}` 
+        : 'http://localhost:5000';
+      const applicationUrl = `${baseUrl}/apply/${token}`;
       
       res.json({
         success: true,
