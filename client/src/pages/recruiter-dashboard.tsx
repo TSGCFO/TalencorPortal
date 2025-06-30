@@ -33,7 +33,8 @@ import {
   Bell,
   Search,
   Filter,
-  MoreVertical
+  MoreVertical,
+  Zap
 } from "lucide-react";
 import type { Application } from "@shared/schema";
 
@@ -51,7 +52,9 @@ interface GeneratedLink {
 export default function RecruiterDashboard() {
   const [newLinkData, setNewLinkData] = useState({
     applicantEmail: "",
-    recruiterEmail: "recruiter@talentcore.com"
+    recruiterEmail: "recruiter@talentcore.com",
+    jobType: "general",
+    customMessage: ""
   });
   const [generatedLinks, setGeneratedLinks] = useState<GeneratedLink[]>([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -61,9 +64,65 @@ export default function RecruiterDashboard() {
   const [showFilters, setShowFilters] = useState(false);
   const [isInstallPromptVisible, setIsInstallPromptVisible] = useState(false);
   const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
+  const [showEmailTemplates, setShowEmailTemplates] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState("general");
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
+
+  // Email templates for different job types
+  const emailTemplates = {
+    general: {
+      subject: "Application Opportunity - TalentCore Staffing",
+      message: "We have an exciting opportunity that matches your profile. Please complete your application using the secure link below."
+    },
+    warehouse: {
+      subject: "Warehouse Position Available - TalentCore Staffing",
+      message: "We have warehouse positions available that offer competitive pay and benefits. Complete your application to get started with your new career."
+    },
+    manufacturing: {
+      subject: "Manufacturing Role - TalentCore Staffing",
+      message: "Join our manufacturing team! We're looking for dedicated individuals for immediate placement. Please fill out your application below."
+    },
+    construction: {
+      subject: "Construction Opportunity - TalentCore Staffing",
+      message: "Construction positions available with competitive wages and growth opportunities. Complete your application to join our team."
+    },
+    office: {
+      subject: "Office Position - TalentCore Staffing", 
+      message: "Professional office positions available. We're seeking qualified candidates for immediate placement. Please complete your application."
+    }
+  };
+
+  // Quick apply presets for common application scenarios
+  const quickApplyPresets = {
+    warehouse: {
+      jobType: "warehouse",
+      transportation: "own-vehicle",
+      hasSafetyShoes: true,
+      safetyShoeType: "steel-toe",
+      liftingCapability: "50lbs",
+      backgroundCheckConsent: true,
+      legalStatus: "citizen"
+    },
+    manufacturing: {
+      jobType: "manufacturing", 
+      transportation: "own-vehicle",
+      hasSafetyShoes: true,
+      safetyShoeType: "composite-toe",
+      liftingCapability: "40lbs",
+      backgroundCheckConsent: true,
+      legalStatus: "citizen"
+    },
+    office: {
+      jobType: "office",
+      transportation: "public-transit",
+      hasSafetyShoes: false,
+      liftingCapability: "25lbs",
+      backgroundCheckConsent: true,
+      legalStatus: "citizen"
+    }
+  };
 
   const { data: applications = [], isLoading } = useQuery<Application[]>({
     queryKey: ["/api/applications", newLinkData.recruiterEmail],
@@ -144,6 +203,24 @@ export default function RecruiterDashboard() {
       (filterStatus === 'active' && !token.usedAt);
     return matchesSearch && matchesFilter;
   });
+
+  // Apply quick preset to application link
+  const applyQuickPreset = (presetType: keyof typeof quickApplyPresets) => {
+    const preset = quickApplyPresets[presetType];
+    const template = emailTemplates[presetType as keyof typeof emailTemplates];
+    
+    setNewLinkData(prev => ({
+      ...prev,
+      jobType: preset.jobType,
+      customMessage: template.message
+    }));
+    setSelectedTemplate(presetType);
+    
+    toast({
+      title: "Quick Apply Preset Applied",
+      description: `${presetType.charAt(0).toUpperCase() + presetType.slice(1)} settings have been applied.`,
+    });
+  };
 
   // Copy to clipboard function for mobile
   const copyToClipboard = async (text: string) => {
@@ -459,7 +536,33 @@ export default function RecruiterDashboard() {
                   Generate Secure Application Link
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-6">
+                {/* Quick Apply Magic Buttons */}
+                <div>
+                  <Label className="text-sm font-medium text-gray-700 mb-3 block">Quick Apply Magic ✨</Label>
+                  <div className={`${isMobile ? 'grid grid-cols-1 gap-2' : 'grid grid-cols-3 gap-3'}`}>
+                    {Object.keys(quickApplyPresets).map((presetType) => {
+                      const preset = quickApplyPresets[presetType as keyof typeof quickApplyPresets];
+                      return (
+                        <Button
+                          key={presetType}
+                          variant={selectedTemplate === presetType ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => applyQuickPreset(presetType as keyof typeof quickApplyPresets)}
+                          className={`${isMobile ? 'h-10 text-sm' : 'h-8 text-xs'} transition-all`}
+                        >
+                          <Sparkles className="mr-1 h-3 w-3" />
+                          {presetType.charAt(0).toUpperCase() + presetType.slice(1)}
+                        </Button>
+                      );
+                    })}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Auto-fills common details like transportation, safety requirements, and email templates
+                  </p>
+                </div>
+
+                {/* Standard Form Fields */}
                 <div>
                   <Label htmlFor="recruiterEmail">Recruiter Email</Label>
                   <Input
@@ -469,6 +572,7 @@ export default function RecruiterDashboard() {
                     className={isMobile ? 'text-base' : ''}
                   />
                 </div>
+                
                 <div>
                   <Label htmlFor="applicantEmail">Applicant Email</Label>
                   <Input
@@ -479,6 +583,45 @@ export default function RecruiterDashboard() {
                     className={isMobile ? 'text-base' : ''}
                   />
                 </div>
+
+                {/* Email Template Customization */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <Label>Email Template</Label>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowEmailTemplates(!showEmailTemplates)}
+                      className="text-xs"
+                    >
+                      {showEmailTemplates ? 'Hide' : 'Customize'}
+                    </Button>
+                  </div>
+                  
+                  {showEmailTemplates && (
+                    <div className="space-y-3 p-4 bg-gray-50 rounded-lg">
+                      <div>
+                        <Label className="text-sm">Subject</Label>
+                        <Input
+                          value={emailTemplates[selectedTemplate as keyof typeof emailTemplates].subject}
+                          readOnly
+                          className="text-sm bg-white"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-sm">Message</Label>
+                        <textarea
+                          value={newLinkData.customMessage || emailTemplates[selectedTemplate as keyof typeof emailTemplates].message}
+                          onChange={(e) => setNewLinkData({...newLinkData, customMessage: e.target.value})}
+                          rows={3}
+                          className="w-full p-2 text-sm border rounded-md bg-white"
+                          placeholder="Custom message for the applicant..."
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 <Button 
                   onClick={handleGenerateLink}
                   disabled={!newLinkData.applicantEmail || generateLinkMutation.isPending}
