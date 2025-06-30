@@ -7,7 +7,26 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { Users, Home, Link as LinkIcon, BarChart3, NotebookPen, Eye } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { 
+  Users, 
+  Home, 
+  Link as LinkIcon, 
+  BarChart3, 
+  NotebookPen, 
+  Eye, 
+  Plus,
+  Copy,
+  CheckCircle,
+  Clock,
+  Mail,
+  Phone,
+  MapPin,
+  Calendar,
+  Star,
+  Menu,
+  X
+} from "lucide-react";
 import type { Application } from "@shared/schema";
 
 interface GeneratedLink {
@@ -27,8 +46,11 @@ export default function RecruiterDashboard() {
     recruiterEmail: "recruiter@talentcore.com"
   });
   const [generatedLinks, setGeneratedLinks] = useState<GeneratedLink[]>([]);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<'overview' | 'generate' | 'applications' | 'links'>('overview');
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const isMobile = useIsMobile();
 
   const { data: applications = [], isLoading } = useQuery<Application[]>({
     queryKey: ["/api/applications", newLinkData.recruiterEmail],
@@ -47,6 +69,38 @@ export default function RecruiterDashboard() {
       return response.json();
     }
   });
+
+  // Copy to clipboard function for mobile
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast({
+        title: "Copied!",
+        description: "Link copied to clipboard",
+      });
+    } catch (err) {
+      // Fallback for older browsers
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        toast({
+          title: "Copied!",
+          description: "Link copied to clipboard",
+        });
+      } catch (err) {
+        toast({
+          title: "Error",
+          description: "Failed to copy link",
+          variant: "destructive",
+        });
+      }
+      document.body.removeChild(textArea);
+    }
+  };
 
   const generateLinkMutation = useMutation({
     mutationFn: async (data: { applicantEmail: string; recruiterEmail: string }) => {
@@ -102,219 +156,327 @@ export default function RecruiterDashboard() {
     avgScore: applications.length > 0 ? (applications.reduce((sum, app) => sum + app.aptitudeScore, 0) / applications.length).toFixed(1) : "0"
   };
 
+  // Mobile navigation tabs
+  const navTabs = [
+    { id: 'overview', label: 'Overview', icon: BarChart3 },
+    { id: 'generate', label: 'Generate', icon: Plus },
+    { id: 'applications', label: 'Applications', icon: NotebookPen },
+    { id: 'links', label: 'Links', icon: LinkIcon },
+  ] as const;
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+      {/* Mobile Header */}
       <div className="bg-white shadow-sm border-b">
-        <div className="container mx-auto px-4 py-4">
+        <div className="px-4 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center">
-              <Users className="text-2xl text-primary mr-3" />
-              <h1 className="text-2xl font-bold text-gray-900">Recruiter Dashboard</h1>
+              <Users className={`${isMobile ? 'text-xl' : 'text-2xl'} text-primary mr-2`} />
+              <h1 className={`${isMobile ? 'text-lg' : 'text-2xl'} font-bold text-gray-900`}>
+                {isMobile ? 'Recruiter' : 'Recruiter Dashboard'}
+              </h1>
             </div>
-            <Link href="/">
-              <Button variant="outline">
-                <Home className="mr-2 h-4 w-4" />
-                Back to Home
+            {!isMobile && (
+              <Link href="/">
+                <Button variant="outline">
+                  <Home className="mr-2 h-4 w-4" />
+                  Back to Home
+                </Button>
+              </Link>
+            )}
+            {isMobile && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              >
+                {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </Button>
-            </Link>
+            )}
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid lg:grid-cols-2 gap-8 mb-8">
-          {/* Generate Secure Link */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <LinkIcon className="mr-3 text-primary" />
-                Generate Secure Application Link
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="recruiterEmail">Recruiter Email</Label>
-                <Input
-                  id="recruiterEmail"
-                  value={newLinkData.recruiterEmail}
-                  onChange={(e) => setNewLinkData({...newLinkData, recruiterEmail: e.target.value})}
-                />
-              </div>
-              <div>
-                <Label htmlFor="applicantEmail">Applicant Email</Label>
-                <Input
-                  id="applicantEmail"
-                  placeholder="applicant@example.com"
-                  value={newLinkData.applicantEmail}
-                  onChange={(e) => setNewLinkData({...newLinkData, applicantEmail: e.target.value})}
-                />
-              </div>
-              <Button 
-                onClick={handleGenerateLink}
-                disabled={!newLinkData.applicantEmail || generateLinkMutation.isPending}
-                className="w-full"
-              >
-                <NotebookPen className="mr-2 h-4 w-4" />
-                {generateLinkMutation.isPending ? "Generating..." : "Generate & Send Secure Link"}
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Application Statistics */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <BarChart3 className="mr-3 text-success" />
-                Application Statistics
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-blue-50 p-4 rounded-lg text-center">
-                  <div className="text-2xl font-bold text-primary">{stats.total}</div>
-                  <div className="text-sm text-gray-600">Total Applications</div>
-                </div>
-                <div className="bg-green-50 p-4 rounded-lg text-center">
-                  <div className="text-2xl font-bold text-success">{stats.completed}</div>
-                  <div className="text-sm text-gray-600">Completed</div>
-                </div>
-                <div className="bg-yellow-50 p-4 rounded-lg text-center">
-                  <div className="text-2xl font-bold text-warning">{stats.pending}</div>
-                  <div className="text-sm text-gray-600">Pending</div>
-                </div>
-                <div className="bg-purple-50 p-4 rounded-lg text-center">
-                  <div className="text-2xl font-bold text-purple-600">{stats.avgScore}</div>
-                  <div className="text-sm text-gray-600">Avg Score</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+      {/* Mobile Navigation */}
+      {isMobile && (
+        <div className="bg-white border-b">
+          <div className="flex overflow-x-auto">
+            {navTabs.map((tab) => {
+              const IconComponent = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex-1 min-w-0 px-3 py-3 text-center border-b-2 transition-colors ${
+                    activeTab === tab.id
+                      ? 'border-primary text-primary'
+                      : 'border-transparent text-gray-500'
+                  }`}
+                >
+                  <IconComponent className="h-5 w-5 mx-auto mb-1" />
+                  <span className="text-xs font-medium">{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
+      )}
 
-        {/* Recent Applications */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Users className="mr-3 text-gray-600" />
-              Recent Applications
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <div className="text-center py-8">Loading applications...</div>
-            ) : applications.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">No applications submitted yet</div>
-            ) : (
-              <div className="space-y-4">
-                {applications.slice(0, 5).map((app) => (
-                  <Card key={app.id} className="p-6">
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div>
-                        <h4 className="font-semibold text-lg text-gray-900">{app.fullName}</h4>
-                        <p className="text-sm text-gray-600">{app.email} | {app.mobileNumber}</p>
-                        <p className="text-sm text-gray-600">SIN: {app.sinNumber}</p>
-                        <p className="text-sm text-gray-600">
-                          Legal Status: {app.legalStatus} | Transport: {app.transportation}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <div className="flex justify-end items-center space-x-2 mb-2">
-                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                            app.aptitudeScore >= 8 ? 'bg-green-100 text-green-800' :
-                            app.aptitudeScore >= 6 ? 'bg-yellow-100 text-yellow-800' :
-                            'bg-red-100 text-red-800'
-                          }`}>
-                            Score: {app.aptitudeScore}/10
-                          </span>
-                          <span className={`px-2 py-1 rounded text-xs ${
-                            app.status === 'completed' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'
-                          }`}>
-                            {app.status}
-                          </span>
-                        </div>
-                        <p className="text-xs text-gray-500">
-                          Submitted: {new Date(app.submittedAt).toLocaleString()}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          Job Type: {app.jobType} | Lifting: {app.liftingCapability}
-                        </p>
-                      </div>
-                    </div>
-                    
-                    <div className="mt-4 pt-4 border-t border-gray-200">
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
-                        <div>
-                          <span className="font-medium">Safety Shoes:</span>
-                          <span className="ml-1">{app.hasSafetyShoes ? `Yes ${app.safetyShoeType ? `(${app.safetyShoeType})` : ''}` : 'No'}</span>
-                        </div>
-                        <div>
-                          <span className="font-medium">Forklift:</span>
-                          <span className="ml-1">{app.hasForklifCert ? 'Certified' : 'No'}</span>
-                        </div>
-                        <div>
-                          <span className="font-medium">Background Check:</span>
-                          <span className="ml-1">{app.backgroundCheckConsent ? 'Consented' : 'Declined'}</span>
-                        </div>
-                        <div>
-                          <span className="font-medium">Documents:</span>
-                          <span className="ml-1">0 files</span>
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
+      <div className={`${isMobile ? 'px-4 py-4' : 'container mx-auto px-4 py-8'}`}>
+        {/* Mobile Menu Overlay */}
+        {isMobile && mobileMenuOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50" onClick={() => setMobileMenuOpen(false)}>
+            <div className="bg-white w-64 h-full p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-lg font-semibold">Menu</h2>
+                <Button variant="ghost" size="sm" onClick={() => setMobileMenuOpen(false)}>
+                  <X className="h-5 w-5" />
+                </Button>
               </div>
-            )}
-          </CardContent>
-        </Card>
+              <Link href="/">
+                <Button variant="outline" className="w-full">
+                  <Home className="mr-2 h-4 w-4" />
+                  Back to Home
+                </Button>
+              </Link>
+            </div>
+          </div>
+        )}
 
-        {/* Generated Links */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <LinkIcon className="mr-3 text-blue-600" />
-              Generated Application Links
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {tokens.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">No application links generated yet</div>
-            ) : (
-              <div className="space-y-4">
-                {tokens.map((token: any) => (
-                  <div key={token.id} className="p-4 border border-gray-200 rounded-lg">
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <p className="font-medium text-gray-900">{token.applicantEmail}</p>
-                        <p className="text-sm text-gray-600 font-mono break-all">{token.applicationUrl}</p>
-                        <p className="text-xs text-gray-500 mt-1">
-                          Generated: {new Date(token.createdAt).toLocaleString()}
-                        </p>
-                      </div>
-                      <div className="text-right ml-4">
-                        <span className={`px-2 py-1 rounded text-xs ${
-                          token.usedAt ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
-                        }`}>
-                          {token.usedAt ? 'Used' : 'Active'}
-                        </span>
-                        <p className="text-xs text-gray-500 mt-1">
-                          Expires: {new Date(token.expiresAt).toLocaleDateString()}
-                        </p>
-                      </div>
-                    </div>
-                    <Link href={`/apply/${token.token}`}>
-                      <Button size="sm" variant="outline" className="mt-3">
-                        <Eye className="mr-1 h-3 w-3" />
-                        View Application Form
-                      </Button>
-                    </Link>
+        {/* Overview Tab - Stats Cards */}
+        {(!isMobile || activeTab === 'overview') && (
+          <div className={`${isMobile ? 'space-y-4' : 'grid lg:grid-cols-2 gap-8'} mb-8`}>
+            {/* Stats Grid */}
+            <div className={`${isMobile ? 'grid grid-cols-2 gap-3' : 'grid grid-cols-2 gap-4'}`}>
+              <Card>
+                <CardContent className={`${isMobile ? 'p-4' : 'p-6'} text-center`}>
+                  <div className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold text-primary mb-2`}>{stats.total}</div>
+                  <div className={`${isMobile ? 'text-xs' : 'text-sm'} text-gray-600`}>Total Applications</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className={`${isMobile ? 'p-4' : 'p-6'} text-center`}>
+                  <div className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold text-green-600 mb-2`}>{stats.completed}</div>
+                  <div className={`${isMobile ? 'text-xs' : 'text-sm'} text-gray-600`}>Completed</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className={`${isMobile ? 'p-4' : 'p-6'} text-center`}>
+                  <div className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold text-yellow-600 mb-2`}>{stats.pending}</div>
+                  <div className={`${isMobile ? 'text-xs' : 'text-sm'} text-gray-600`}>Pending</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className={`${isMobile ? 'p-4' : 'p-6'} text-center`}>
+                  <div className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold text-blue-600 mb-2`}>{stats.avgScore}</div>
+                  <div className={`${isMobile ? 'text-xs' : 'text-sm'} text-gray-600`}>Avg Score</div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        )}
+
+        {/* Generate Link Tab */}
+        {(!isMobile || activeTab === 'generate') && (
+          <div className="mb-8">
+            <Card>
+              <CardHeader>
+                <CardTitle className={`${isMobile ? 'text-lg' : 'text-xl'} flex items-center`}>
+                  <Plus className="mr-2 text-primary" />
+                  Generate Secure Application Link
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="recruiterEmail">Recruiter Email</Label>
+                  <Input
+                    id="recruiterEmail"
+                    value={newLinkData.recruiterEmail}
+                    onChange={(e) => setNewLinkData({...newLinkData, recruiterEmail: e.target.value})}
+                    className={isMobile ? 'text-base' : ''}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="applicantEmail">Applicant Email</Label>
+                  <Input
+                    id="applicantEmail"
+                    placeholder="applicant@example.com"
+                    value={newLinkData.applicantEmail}
+                    onChange={(e) => setNewLinkData({...newLinkData, applicantEmail: e.target.value})}
+                    className={isMobile ? 'text-base' : ''}
+                  />
+                </div>
+                <Button 
+                  onClick={handleGenerateLink}
+                  disabled={!newLinkData.applicantEmail || generateLinkMutation.isPending}
+                  className={`w-full ${isMobile ? 'h-12 text-base' : ''}`}
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  {generateLinkMutation.isPending ? "Generating..." : "Generate & Send Secure Link"}
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Applications Tab */}
+        {(!isMobile || activeTab === 'applications') && (
+          <div className="mb-8">
+            <Card>
+              <CardHeader>
+                <CardTitle className={`${isMobile ? 'text-lg' : 'text-xl'} flex items-center`}>
+                  <NotebookPen className="mr-2 text-primary" />
+                  Recent Applications
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {isLoading ? (
+                  <div className="text-center py-8">Loading applications...</div>
+                ) : applications.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">No applications submitted yet</div>
+                ) : (
+                  <div className="space-y-4">
+                    {applications.slice(0, isMobile ? 3 : 5).map((app) => (
+                      <Card key={app.id} className={`${isMobile ? 'p-3' : 'p-6'}`}>
+                        <div className={`${isMobile ? 'space-y-3' : 'grid md:grid-cols-2 gap-6'}`}>
+                          <div>
+                            <h4 className={`${isMobile ? 'text-base' : 'text-lg'} font-semibold text-gray-900`}>{app.fullName}</h4>
+                            <div className={`${isMobile ? 'text-sm' : 'text-sm'} text-gray-600 space-y-1`}>
+                              <div className="flex items-center">
+                                <Mail className="h-3 w-3 mr-1" />
+                                {app.email}
+                              </div>
+                              <div className="flex items-center">
+                                <Phone className="h-3 w-3 mr-1" />
+                                {app.mobileNumber}
+                              </div>
+                              {!isMobile && (
+                                <>
+                                  <p>SIN: {app.sinNumber}</p>
+                                  <p>Legal Status: {app.legalStatus} | Transport: {app.transportation}</p>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                          <div className={`${isMobile ? 'flex justify-between items-center' : 'text-right'}`}>
+                            <div className="flex items-center space-x-2">
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                app.aptitudeScore >= 8 ? 'bg-green-100 text-green-800' :
+                                app.aptitudeScore >= 6 ? 'bg-yellow-100 text-yellow-800' :
+                                'bg-red-100 text-red-800'
+                              }`}>
+                                <Star className="h-3 w-3 inline mr-1" />
+                                {app.aptitudeScore}/10
+                              </span>
+                              <span className={`px-2 py-1 rounded text-xs ${
+                                app.status === 'completed' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'
+                              }`}>
+                                {app.status}
+                              </span>
+                            </div>
+                            {!isMobile && (
+                              <div>
+                                <p className="text-xs text-gray-500 flex items-center">
+                                  <Calendar className="h-3 w-3 mr-1" />
+                                  {new Date(app.submittedAt).toLocaleDateString()}
+                                </p>
+                                <p className="text-xs text-gray-500">
+                                  {app.jobType} | {app.liftingCapability}
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
                   </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Links Tab */}
+        {(!isMobile || activeTab === 'links') && (
+          <div className="mb-8">
+            <Card>
+              <CardHeader>
+                <CardTitle className={`${isMobile ? 'text-lg' : 'text-xl'} flex items-center`}>
+                  <LinkIcon className="mr-2 text-primary" />
+                  Generated Application Links
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {tokens.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">No application links generated yet</div>
+                ) : (
+                  <div className="space-y-4">
+                    {tokens.map((token: any) => (
+                      <Card key={token.id} className={`${isMobile ? 'p-3' : 'p-4'} border border-gray-200`}>
+                        <div className={`${isMobile ? 'space-y-3' : 'flex justify-between items-start'}`}>
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between">
+                              <p className={`${isMobile ? 'text-sm' : 'text-base'} font-medium text-gray-900`}>
+                                {token.applicantEmail}
+                              </p>
+                              <span className={`px-2 py-1 rounded text-xs ${
+                                token.usedAt ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
+                              }`}>
+                                {token.usedAt ? 'Used' : 'Active'}
+                              </span>
+                            </div>
+                            {isMobile ? (
+                              <div className="mt-2">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => copyToClipboard(token.applicationUrl)}
+                                  className="w-full h-10"
+                                >
+                                  <Copy className="mr-2 h-4 w-4" />
+                                  Copy Link
+                                </Button>
+                              </div>
+                            ) : (
+                              <p className="text-sm text-gray-600 font-mono break-all mt-1">{token.applicationUrl}</p>
+                            )}
+                            <div className="flex items-center justify-between mt-2">
+                              <p className="text-xs text-gray-500 flex items-center">
+                                <Clock className="h-3 w-3 mr-1" />
+                                Created: {new Date(token.createdAt).toLocaleDateString()}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                Expires: {new Date(token.expiresAt).toLocaleDateString()}
+                              </p>
+                            </div>
+                          </div>
+                          {!isMobile && (
+                            <div className="ml-4 flex flex-col space-y-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => copyToClipboard(token.applicationUrl)}
+                              >
+                                <Copy className="mr-1 h-3 w-3" />
+                                Copy
+                              </Button>
+                              <Link href={`/apply/${token.token}`}>
+                                <Button size="sm" variant="outline">
+                                  <Eye className="mr-1 h-3 w-3" />
+                                  View
+                                </Button>
+                              </Link>
+                            </div>
+                          )}
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
     </div>
   );
