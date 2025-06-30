@@ -239,15 +239,9 @@ export default function ApplicationForm() {
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center">
-              <FileText className="text-2xl text-primary mr-3" />
-              <h1 className="text-2xl font-bold text-gray-900">Employment Application</h1>
-            </div>
-            <Button variant="outline" onClick={() => setLocation("/")}>
-              <Home className="mr-2 h-4 w-4" />
-              Back to Home
-            </Button>
+          <div className="flex items-center">
+            <FileText className="text-2xl text-primary mr-3" />
+            <h1 className="text-2xl font-bold text-gray-900">Employment Application</h1>
           </div>
         </div>
       </div>
