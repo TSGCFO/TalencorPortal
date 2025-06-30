@@ -33,8 +33,7 @@ import {
   Bell,
   Search,
   Filter,
-  MoreVertical,
-  Zap
+  MoreVertical
 } from "lucide-react";
 import type { Application } from "@shared/schema";
 
@@ -551,7 +550,7 @@ export default function RecruiterDashboard() {
                           onClick={() => applyQuickPreset(presetType as keyof typeof quickApplyPresets)}
                           className={`${isMobile ? 'h-10 text-sm' : 'h-8 text-xs'} transition-all`}
                         >
-                          <Sparkles className="mr-1 h-3 w-3" />
+                          <Plus className="mr-1 h-3 w-3" />
                           {presetType.charAt(0).toUpperCase() + presetType.slice(1)}
                         </Button>
                       );
