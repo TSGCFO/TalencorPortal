@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { z } from "zod";
 import { insertApplicationSchema, insertApplicationTokenSchema } from "@shared/schema";
 import crypto from "crypto";
+import { upload, uploadFile, getFileUrl, listApplicationFiles } from './file-storage';
 
 const generateLinkSchema = z.object({
   applicantEmail: z.string().email(),

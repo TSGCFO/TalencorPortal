@@ -164,7 +164,7 @@ async function testApplicationSubmission(token, tokenData) {
 async function testRetrieveApplications() {
   console.log('\n📋 Testing application retrieval...');
   
-  const applications = await makeRequest('GET', '/api/applications');
+  const applications = await makeRequest('GET', '/api/applications?recruiterEmail=recruiter@talentcore.com');
   console.log(`✅ Retrieved ${applications.length} applications`);
   
   if (applications.length > 0) {
