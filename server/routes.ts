@@ -212,16 +212,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // File download endpoint
-  app.get("/api/files/applications/:token/:filename", async (req, res) => {
+  app.get("/api/files/*", async (req, res) => {
     try {
-      const { token, filename } = req.params;
-      const fileId = `applications/${token}/${filename}`;
+      const fileId = req.params[0]; // Get the full path after /api/files/
       
       const fileBuffer = await getFile(fileId);
       if (!fileBuffer) {
         return res.status(404).json({ error: 'File not found' });
       }
 
+      // Extract filename from fileId
+      const filename = fileId.split('/').pop() || 'download';
+      
       // Set appropriate headers
       res.setHeader('Content-Type', 'application/octet-stream');
       res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);

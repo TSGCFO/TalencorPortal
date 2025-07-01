@@ -75,12 +75,8 @@ export async function getFileUrl(fileId: string): Promise<string> {
  */
 export async function getFile(fileId: string): Promise<Buffer | null> {
   try {
-    const { ok, value, error } = await client.downloadAsBytes(fileId);
-    if (!ok) {
-      console.error('Download error:', error);
-      return null;
-    }
-    return Buffer.from(value);
+    const data = await client.downloadAsBytes(fileId);
+    return Buffer.from(data);
   } catch (error) {
     console.error('File retrieval error:', error);
     return null;
@@ -92,11 +88,8 @@ export async function getFile(fileId: string): Promise<Buffer | null> {
  */
 export async function deleteFile(fileId: string): Promise<void> {
   try {
-    const { ok, error } = await client.delete(fileId);
-    if (!ok) {
-      console.error('Delete error:', error);
-      throw new Error('Failed to delete file');
-    }
+    await client.delete(fileId);
+    console.log('File deleted successfully:', fileId);
   } catch (error) {
     console.error('File deletion error:', error);
     throw new Error('Failed to delete file');
@@ -108,12 +101,8 @@ export async function deleteFile(fileId: string): Promise<void> {
  */
 export async function listApplicationFiles(applicationToken: string): Promise<string[]> {
   try {
-    const { ok, value, error } = await client.list(`applications/${applicationToken}/`);
-    if (!ok) {
-      console.error('List files error:', error);
-      return [];
-    }
-    return value.map((file: any) => file.key);
+    const files = await client.list(`applications/${applicationToken}/`);
+    return files.map((file: any) => file.key || file);
   } catch (error) {
     console.error('List files error:', error);
     return [];
