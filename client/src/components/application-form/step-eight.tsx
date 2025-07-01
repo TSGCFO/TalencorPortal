@@ -150,7 +150,18 @@ export default function StepEight({ formData, updateFormData, onPrevious, onSubm
   };
 
   const handleFileRemove = (fileId: string) => {
-    setUploadedFiles(prev => prev.filter(file => file.id !== fileId));
+    setUploadedFiles(prev => {
+      const updated = prev.filter(file => file.id !== fileId);
+      
+      // Update form data with remaining uploaded files
+      const uploadedFilesList = updated
+        .filter(f => f.uploaded)
+        .map(f => ({ id: f.id, name: f.name, url: f.url }));
+      
+      updateFormData({ uploadedDocuments: uploadedFilesList });
+      
+      return updated;
+    });
   };
 
   const handleDragOver = (e: React.DragEvent) => {

@@ -71,6 +71,9 @@ export const applications = pgTable("applications", {
   agreementDate: timestamp("agreement_date").notNull(),
   termsAccepted: boolean("terms_accepted").notNull(),
   
+  // Uploaded Documents
+  uploadedDocuments: json("uploaded_documents").$type<{id: string, name: string, url: string}[]>(),
+  
   // Metadata
   submittedAt: timestamp("submitted_at").defaultNow().notNull(),
   status: text("status").default("pending").notNull(),
