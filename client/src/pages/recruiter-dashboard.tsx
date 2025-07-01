@@ -748,7 +748,14 @@ export default function RecruiterDashboard() {
                             <div className="grid md:grid-cols-2 gap-4 text-sm">
                               <div>
                                 <p><strong>Commitment:</strong> {app.commitmentMonths} months</p>
-                                {app.classSchedule && <p><strong>Class Schedule:</strong> {app.classSchedule}</p>}
+                                {app.classSchedule && <p><strong>Class Schedule:</strong> {
+                                  typeof app.classSchedule === 'object' 
+                                    ? Object.entries(app.classSchedule as Record<string, string>)
+                                        .filter(([_, time]) => time)
+                                        .map(([day, time]) => `${day.charAt(0).toUpperCase() + day.slice(1)}: ${time}`)
+                                        .join(', ')
+                                    : String(app.classSchedule)
+                                }</p>}
                               </div>
                               <div>
                                 {app.morningDays?.length > 0 && <p><strong>Morning Availability:</strong> {app.morningDays.join(', ')}</p>}
