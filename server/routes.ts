@@ -118,6 +118,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ...req.body,
         dateOfBirth: req.body.dateOfBirth ? new Date(req.body.dateOfBirth) : undefined,
         agreementDate: req.body.agreementDate ? new Date(req.body.agreementDate) : undefined,
+        forkliftValidity: req.body.forkliftValidity ? new Date(req.body.forkliftValidity) : undefined,
         // Ensure jobType has a default value if not provided
         jobType: req.body.jobType || 'general',
       };

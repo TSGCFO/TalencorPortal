@@ -34,7 +34,9 @@ import {
   Bell,
   Search,
   Filter,
-  MoreVertical
+  MoreVertical,
+  Zap,
+  Sparkles
 } from "lucide-react";
 
 interface GeneratedLink {

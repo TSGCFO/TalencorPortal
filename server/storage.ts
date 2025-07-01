@@ -33,11 +33,16 @@ export interface IStorage {
 
 export class DatabaseStorage implements IStorage {
   async createApplication(application: InsertApplication): Promise<Application> {
-    const [result] = await db
-      .insert(applications)
-      .values(application)
-      .returning();
-    return result;
+    try {
+      const [result] = await db
+        .insert(applications)
+        .values(application)
+        .returning();
+      return result;
+    } catch (error) {
+      console.error('Database insert error:', error);
+      throw error;
+    }
   }
 
   async getApplicationByToken(tokenId: string): Promise<Application | undefined> {
