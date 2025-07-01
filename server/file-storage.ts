@@ -1,13 +1,9 @@
 import multer from 'multer';
 import { Request } from 'express';
-import fs from 'fs';
-import path from 'path';
 
-// Create uploads directory if it doesn't exist
-const uploadsDir = path.join(process.cwd(), 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
+// Import Replit Object Storage
+import { Client } from '@replit/object-storage';
+const client = new Client();
 
 // Configure multer for file uploads
 const storage = multer.memoryStorage();
@@ -40,35 +36,30 @@ export const upload = multer({
 });
 
 /**
- * Upload a file to local storage
+ * Upload a file to Replit Object Storage
  */
 export async function uploadFile(
   file: Express.Multer.File,
   applicationToken: string
 ): Promise<{ fileId: string; url: string }> {
   try {
-    // Create token-specific directory
-    const tokenDir = path.join(uploadsDir, applicationToken);
-    if (!fs.existsSync(tokenDir)) {
-      fs.mkdirSync(tokenDir, { recursive: true });
-    }
-    
-    // Generate unique filename
+    // Generate unique file key
     const timestamp = Date.now();
     const sanitizedFilename = file.originalname.replace(/[^a-zA-Z0-9.-]/g, '_');
-    const filename = `${timestamp}-${sanitizedFilename}`;
-    const filepath = path.join(tokenDir, filename);
+    const fileKey = `applications/${applicationToken}/${timestamp}-${sanitizedFilename}`;
     
-    // Save file to disk
-    fs.writeFileSync(filepath, file.buffer);
+    // Upload file to Replit Object Storage
+    await client.uploadFromBuffer(fileKey, file.buffer);
     
-    const fileId = `${applicationToken}/${filename}`;
-    const url = `/api/files/${fileId}`;
+    console.log('File uploaded successfully to Replit Object Storage:', fileKey);
     
-    return { fileId, url };
+    return { 
+      fileId: fileKey, 
+      url: `/api/files/${fileKey}`
+    };
   } catch (error) {
-    console.error('File upload error:', error);
-    throw new Error('Failed to upload file');
+    console.error('Replit Object Storage upload error:', error);
+    throw new Error('Failed to upload file to object storage');
   }
 }
 
@@ -80,13 +71,31 @@ export async function getFileUrl(fileId: string): Promise<string> {
 }
 
 /**
+ * Get file from Replit Object Storage
+ */
+export async function getFile(fileId: string): Promise<Buffer | null> {
+  try {
+    const { ok, value, error } = await client.downloadAsBytes(fileId);
+    if (!ok) {
+      console.error('Download error:', error);
+      return null;
+    }
+    return Buffer.from(value);
+  } catch (error) {
+    console.error('File retrieval error:', error);
+    return null;
+  }
+}
+
+/**
  * Delete a file from storage
  */
 export async function deleteFile(fileId: string): Promise<void> {
   try {
-    const filepath = path.join(uploadsDir, fileId);
-    if (fs.existsSync(filepath)) {
-      fs.unlinkSync(filepath);
+    const { ok, error } = await client.delete(fileId);
+    if (!ok) {
+      console.error('Delete error:', error);
+      throw new Error('Failed to delete file');
     }
   } catch (error) {
     console.error('File deletion error:', error);
@@ -99,12 +108,12 @@ export async function deleteFile(fileId: string): Promise<void> {
  */
 export async function listApplicationFiles(applicationToken: string): Promise<string[]> {
   try {
-    const tokenDir = path.join(uploadsDir, applicationToken);
-    if (!fs.existsSync(tokenDir)) {
+    const { ok, value, error } = await client.list(`applications/${applicationToken}/`);
+    if (!ok) {
+      console.error('List files error:', error);
       return [];
     }
-    const files = fs.readdirSync(tokenDir);
-    return files.map(file => `${applicationToken}/${file}`);
+    return value.map((file: any) => file.key);
   } catch (error) {
     console.error('List files error:', error);
     return [];

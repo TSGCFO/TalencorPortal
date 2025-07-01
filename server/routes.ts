@@ -4,7 +4,7 @@ import { storage } from "./storage";
 import { z } from "zod";
 import { insertApplicationSchema, insertApplicationTokenSchema } from "@shared/schema";
 import crypto from "crypto";
-import { upload, uploadFile, getFileUrl, listApplicationFiles } from './file-storage';
+import { upload, uploadFile, getFileUrl, getFile, listApplicationFiles } from './file-storage';
 
 const generateLinkSchema = z.object({
   applicantEmail: z.string().email(),
@@ -212,16 +212,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // File download endpoint
-  app.get("/api/files/:token/:filename", async (req, res) => {
+  app.get("/api/files/applications/:token/:filename", async (req, res) => {
     try {
       const { token, filename } = req.params;
-      const filepath = require('path').join(process.cwd(), 'uploads', token, filename);
+      const fileId = `applications/${token}/${filename}`;
       
-      if (!require('fs').existsSync(filepath)) {
+      const fileBuffer = await getFile(fileId);
+      if (!fileBuffer) {
         return res.status(404).json({ error: 'File not found' });
       }
 
-      res.sendFile(filepath);
+      // Set appropriate headers
+      res.setHeader('Content-Type', 'application/octet-stream');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      
+      res.send(fileBuffer);
     } catch (error) {
       console.error('File download error:', error);
       res.status(500).json({ error: 'Failed to download file' });
