@@ -116,25 +116,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('Received application data:', {
         dateOfBirth: req.body.dateOfBirth,
         agreementDate: req.body.agreementDate,
+        jobType: req.body.jobType,
         dateOfBirthType: typeof req.body.dateOfBirth,
-        agreementDateType: typeof req.body.agreementDate
+        agreementDateType: typeof req.body.agreementDate,
+        jobTypeType: typeof req.body.jobType
       });
       
-      // Convert date strings to Date objects before validation
+      // Convert date strings to Date objects and ensure required fields before validation
       const requestData = {
         ...req.body,
         dateOfBirth: req.body.dateOfBirth ? new Date(req.body.dateOfBirth) : undefined,
         agreementDate: req.body.agreementDate ? new Date(req.body.agreementDate) : undefined,
+        // Ensure jobType has a default value if not provided
+        jobType: req.body.jobType || 'general',
       };
       
       console.log('After conversion:', {
         dateOfBirth: requestData.dateOfBirth,
         agreementDate: requestData.agreementDate,
         dateOfBirthType: typeof requestData.dateOfBirth,
-        agreementDateType: typeof requestData.agreementDate
+        agreementDateType: typeof requestData.agreementDate,
+        jobType: requestData.jobType,
+        jobTypeType: typeof requestData.jobType
       });
       
       const applicationData = insertApplicationSchema.parse(requestData);
+      
+      console.log('Parsed application data jobType:', applicationData.jobType);
       
       // Validate token
       const tokenData = await storage.getApplicationToken(applicationData.tokenId);
@@ -149,7 +157,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ...applicationData,
         aptitudeScore,
         recruiterEmail: tokenData.recruiterEmail,
-        jobType: tokenData.jobType,
+        // Use the jobType from the application data itself
+        jobType: applicationData.jobType || 'general',
       });
       
       // Mark token as used
