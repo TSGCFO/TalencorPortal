@@ -76,7 +76,30 @@ export async function getFileUrl(fileId: string): Promise<string> {
 export async function getFile(fileId: string): Promise<Buffer | null> {
   try {
     const data = await client.downloadAsBytes(fileId);
-    return Buffer.from(data);
+    console.log('Downloaded data type:', typeof data);
+    console.log('Downloaded data keys:', Object.keys(data));
+    
+    // Handle different return types from downloadAsBytes
+    if (Buffer.isBuffer(data)) {
+      return data;
+    } else if (data instanceof Uint8Array) {
+      return Buffer.from(data);
+    } else if (Array.isArray(data)) {
+      return Buffer.from(data);
+    } else if (typeof data === 'object' && data !== null) {
+      // Check if it's an object with binary data
+      if ('data' in data && Array.isArray(data.data)) {
+        return Buffer.from(data.data);
+      } else if ('buffer' in data) {
+        return Buffer.from(data.buffer);
+      } else {
+        console.error('Unexpected object structure:', data);
+        return null;
+      }
+    } else {
+      console.error('Unexpected data type from downloadAsBytes:', typeof data);
+      return null;
+    }
   } catch (error) {
     console.error('File retrieval error:', error);
     return null;
