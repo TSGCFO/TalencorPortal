@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Application } from "@shared/schema";
 import { 
   Users, 
   Home, 
@@ -35,7 +36,6 @@ import {
   Filter,
   MoreVertical
 } from "lucide-react";
-import type { Application } from "@shared/schema";
 
 interface GeneratedLink {
   id: number;
