@@ -40,32 +40,30 @@ export const upload = multer({
 });
 
 /**
- * Upload a file to Replit Object Storage
+ * Upload a file to local storage
  */
 export async function uploadFile(
   file: Express.Multer.File,
   applicationToken: string
 ): Promise<{ fileId: string; url: string }> {
   try {
-    // Generate unique file ID
-    const timestamp = Date.now();
-    const fileId = `${applicationToken}/${timestamp}-${file.originalname.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-    
-    // Upload to object storage
-    const result = await objectStorage.put(fileId, file.buffer, {
-      'Content-Type': file.mimetype,
-      'X-Original-Name': file.originalname,
-      'X-Uploaded-At': new Date().toISOString(),
-      'X-Application-Token': applicationToken,
-      'X-File-Size': file.size.toString()
-    });
-    
-    if (!result.success) {
-      throw new Error('Failed to upload to object storage');
+    // Create token-specific directory
+    const tokenDir = path.join(uploadsDir, applicationToken);
+    if (!fs.existsSync(tokenDir)) {
+      fs.mkdirSync(tokenDir, { recursive: true });
     }
     
-    // Generate public URL
-    const url = `${process.env.REPLIT_DOMAIN || 'https://localhost:5000'}/api/files/${fileId}`;
+    // Generate unique filename
+    const timestamp = Date.now();
+    const sanitizedFilename = file.originalname.replace(/[^a-zA-Z0-9.-]/g, '_');
+    const filename = `${timestamp}-${sanitizedFilename}`;
+    const filepath = path.join(tokenDir, filename);
+    
+    // Save file to disk
+    fs.writeFileSync(filepath, file.buffer);
+    
+    const fileId = `${applicationToken}/${filename}`;
+    const url = `/api/files/${fileId}`;
     
     return { fileId, url };
   } catch (error) {
@@ -78,12 +76,7 @@ export async function uploadFile(
  * Get download URL for a file
  */
 export async function getFileUrl(fileId: string): Promise<string> {
-  try {
-    return await objectStorage.getDownloadUrl(fileId);
-  } catch (error) {
-    console.error('Get file URL error:', error);
-    throw new Error('Failed to get file URL');
-  }
+  return `/api/files/${fileId}`;
 }
 
 /**
@@ -91,7 +84,10 @@ export async function getFileUrl(fileId: string): Promise<string> {
  */
 export async function deleteFile(fileId: string): Promise<void> {
   try {
-    await objectStorage.delete(fileId);
+    const filepath = path.join(uploadsDir, fileId);
+    if (fs.existsSync(filepath)) {
+      fs.unlinkSync(filepath);
+    }
   } catch (error) {
     console.error('File deletion error:', error);
     throw new Error('Failed to delete file');
@@ -103,8 +99,12 @@ export async function deleteFile(fileId: string): Promise<void> {
  */
 export async function listApplicationFiles(applicationToken: string): Promise<string[]> {
   try {
-    const files = await objectStorage.list({ prefix: `${applicationToken}/` });
-    return files.map(file => file.key);
+    const tokenDir = path.join(uploadsDir, applicationToken);
+    if (!fs.existsSync(tokenDir)) {
+      return [];
+    }
+    const files = fs.readdirSync(tokenDir);
+    return files.map(file => `${applicationToken}/${file}`);
   } catch (error) {
     console.error('List files error:', error);
     return [];

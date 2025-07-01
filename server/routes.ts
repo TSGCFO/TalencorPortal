@@ -211,6 +211,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // File download endpoint
+  app.get("/api/files/:token/:filename", async (req, res) => {
+    try {
+      const { token, filename } = req.params;
+      const filepath = require('path').join(process.cwd(), 'uploads', token, filename);
+      
+      if (!require('fs').existsSync(filepath)) {
+        return res.status(404).json({ error: 'File not found' });
+      }
+
+      res.sendFile(filepath);
+    } catch (error) {
+      console.error('File download error:', error);
+      res.status(500).json({ error: 'Failed to download file' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
