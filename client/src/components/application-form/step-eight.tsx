@@ -1,11 +1,19 @@
-import { useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { FileUp, ArrowLeft, Check, Upload } from "lucide-react";
+import { FileUp, ArrowLeft, Check, Upload, FileText, X } from "lucide-react";
 import type { InsertApplication } from "@shared/schema";
+
+interface UploadedFile {
+  id: string;
+  name: string;
+  size: number;
+  type: string;
+  file: File;
+}
 
 interface StepEightProps {
   formData: Partial<InsertApplication>;
@@ -16,6 +24,10 @@ interface StepEightProps {
 }
 
 export default function StepEight({ formData, updateFormData, onPrevious, onSubmit, isSubmitting }: StepEightProps) {
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+  const [isDragOver, setIsDragOver] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const handleInputChange = (field: keyof InsertApplication, value: string | boolean | Date) => {
     updateFormData({ [field]: value });
   };
@@ -26,6 +38,62 @@ export default function StepEight({ formData, updateFormData, onPrevious, onSubm
       handleInputChange("agreementDate", new Date());
     }
   }, []);
+
+  const handleFileSelect = (files: FileList | null) => {
+    if (!files) return;
+
+    const newFiles = Array.from(files).map((file) => ({
+      id: `${Date.now()}-${Math.random()}`,
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      file: file
+    }));
+
+    // Filter valid files (check size and type)
+    const validFiles = newFiles.filter((file) => {
+      const validTypes = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png'];
+      const extension = '.' + file.name.split('.').pop()?.toLowerCase();
+      const isValidType = validTypes.includes(extension);
+      const isValidSize = file.size <= 5 * 1024 * 1024; // 5MB limit
+
+      if (!isValidType) {
+        alert(`File ${file.name} has an invalid format. Please upload PDF, DOC, DOCX, JPG, or PNG files.`);
+        return false;
+      }
+      if (!isValidSize) {
+        alert(`File ${file.name} is too large. Please upload files smaller than 5MB.`);
+        return false;
+      }
+      return true;
+    });
+
+    setUploadedFiles(prev => [...prev, ...validFiles]);
+  };
+
+  const handleFileRemove = (fileId: string) => {
+    setUploadedFiles(prev => prev.filter(file => file.id !== fileId));
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    handleFileSelect(e.dataTransfer.files);
+  };
+
+  const handleButtonClick = () => {
+    fileInputRef.current?.click();
+  };
 
   return (
     <Card>
@@ -40,15 +108,69 @@ export default function StepEight({ formData, updateFormData, onPrevious, onSubm
         <div>
           <h3 className="text-lg font-semibold mb-4">Required Documents</h3>
           <div className="space-y-4">
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary transition-colors">
+            <div 
+              className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer ${
+                isDragOver 
+                  ? 'border-primary bg-primary/5' 
+                  : 'border-gray-300 hover:border-primary'
+              }`}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              onClick={handleButtonClick}
+            >
               <Upload className="text-4xl text-gray-400 mb-4 mx-auto" size={64} />
-              <p className="text-gray-600 mb-2">Drag and drop files here or click to browse</p>
+              <p className="text-gray-600 mb-2">
+                {isDragOver ? 'Drop files here' : 'Drag and drop files here or click to browse'}
+              </p>
               <p className="text-xs text-gray-500">Accepted formats: PDF, DOC, DOCX, JPG, PNG (Max 5MB each)</p>
-              <Button type="button" className="mt-4" variant="outline">
+              <Button type="button" className="mt-4" variant="outline" onClick={handleButtonClick}>
                 <Upload className="mr-2 h-4 w-4" />
                 Select Files
               </Button>
+              
+              {/* Hidden file input */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                onChange={(e) => handleFileSelect(e.target.files)}
+                className="hidden"
+              />
             </div>
+
+            {/* Uploaded Files List */}
+            {uploadedFiles.length > 0 && (
+              <div className="space-y-3">
+                <h4 className="font-medium text-sm">Uploaded Documents ({uploadedFiles.length}):</h4>
+                {uploadedFiles.map((file) => (
+                  <div key={file.id} className="flex items-center justify-between p-3 border rounded-lg bg-gray-50">
+                    <div className="flex items-center space-x-3">
+                      <FileText className="h-5 w-5 text-blue-600 flex-shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <p className="font-medium text-sm truncate">{file.name}</p>
+                        <p className="text-xs text-gray-500">
+                          {(file.size / 1024 / 1024).toFixed(2)} MB
+                        </p>
+                      </div>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleFileRemove(file.id);
+                      }}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
             
             <div className="text-sm text-gray-600">
               <p className="font-medium mb-2">Please upload the following documents:</p>
