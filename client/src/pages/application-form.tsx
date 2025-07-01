@@ -27,6 +27,38 @@ export default function ApplicationForm() {
   const [formData, setFormData] = useState<Partial<InsertApplication>>({});
   const { toast } = useToast();
 
+  // Load saved progress from localStorage
+  useEffect(() => {
+    if (token) {
+      const savedProgress = localStorage.getItem(`application-progress-${token}`);
+      if (savedProgress) {
+        try {
+          const parsed = JSON.parse(savedProgress);
+          setCurrentStep(parsed.currentStep || 1);
+          setFormData(parsed.formData || {});
+          toast({
+            title: "Progress Restored",
+            description: "Your previous progress has been restored.",
+          });
+        } catch (error) {
+          console.error("Error loading saved progress:", error);
+        }
+      }
+    }
+  }, [token, toast]);
+
+  // Save progress to localStorage whenever formData or currentStep changes
+  useEffect(() => {
+    if (token && (Object.keys(formData).length > 0 || currentStep > 1)) {
+      const progressData = {
+        currentStep,
+        formData,
+        lastSaved: new Date().toISOString()
+      };
+      localStorage.setItem(`application-progress-${token}`, JSON.stringify(progressData));
+    }
+  }, [formData, currentStep, token]);
+
   const { data: tokenData, isLoading: isValidating, error } = useQuery({
     queryKey: ["/api/validate-token", token],
     queryFn: async () => {
@@ -125,13 +157,21 @@ export default function ApplicationForm() {
     const completeData: InsertApplication = {
       ...formData,
       tokenId: token!,
+      recruiterEmail: tokenData?.tokenData?.recruiterEmail || '',
+      jobType: tokenData?.tokenData?.jobType || 'general',
       morningDays: formData.morningDays || [],
       afternoonDays: formData.afternoonDays || [],
       nightDays: formData.nightDays || [],
       aptitudeAnswers: formData.aptitudeAnswers || {},
       aptitudeScore: formData.aptitudeScore || 0,
+      // Convert date strings to Date objects
+      dateOfBirth: formData.dateOfBirth ? new Date(formData.dateOfBirth) : new Date(),
+      agreementDate: formData.agreementDate ? new Date(formData.agreementDate) : new Date(),
     } as InsertApplication;
 
+    // Clear saved progress on successful submission
+    localStorage.removeItem(`application-progress-${token}`);
+    
     submitMutation.mutate(completeData);
   };
 
