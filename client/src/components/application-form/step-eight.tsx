@@ -4,7 +4,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { FileUp, ArrowLeft, Check, Upload, FileText, X } from "lucide-react";
+import { FileUp, ArrowLeft, Check, Upload, FileText, X, Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useParams } from "wouter";
 import type { InsertApplication } from "@shared/schema";
 
 interface UploadedFile {
@@ -12,7 +14,9 @@ interface UploadedFile {
   name: string;
   size: number;
   type: string;
-  file: File;
+  url?: string;
+  uploading?: boolean;
+  uploaded?: boolean;
 }
 
 interface StepEightProps {
@@ -27,6 +31,8 @@ export default function StepEight({ formData, updateFormData, onPrevious, onSubm
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { token } = useParams<{ token: string }>();
+  const { toast } = useToast();
 
   const handleInputChange = (field: keyof InsertApplication, value: string | boolean | Date) => {
     updateFormData({ [field]: value });
@@ -39,36 +45,108 @@ export default function StepEight({ formData, updateFormData, onPrevious, onSubm
     }
   }, []);
 
-  const handleFileSelect = (files: FileList | null) => {
-    if (!files) return;
+  const handleFileSelect = async (files: FileList | null) => {
+    if (!files || !token) return;
 
-    const newFiles = Array.from(files).map((file) => ({
-      id: `${Date.now()}-${Math.random()}`,
-      name: file.name,
-      size: file.size,
-      type: file.type,
-      file: file
-    }));
-
+    const fileArray = Array.from(files);
+    
     // Filter valid files (check size and type)
-    const validFiles = newFiles.filter((file) => {
+    const validFiles = fileArray.filter((file) => {
       const validTypes = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png'];
       const extension = '.' + file.name.split('.').pop()?.toLowerCase();
       const isValidType = validTypes.includes(extension);
       const isValidSize = file.size <= 5 * 1024 * 1024; // 5MB limit
 
       if (!isValidType) {
-        alert(`File ${file.name} has an invalid format. Please upload PDF, DOC, DOCX, JPG, or PNG files.`);
+        toast({
+          title: "Invalid File Type",
+          description: `${file.name} has an invalid format. Please upload PDF, DOC, DOCX, JPG, or PNG files.`,
+          variant: "destructive",
+        });
         return false;
       }
       if (!isValidSize) {
-        alert(`File ${file.name} is too large. Please upload files smaller than 5MB.`);
+        toast({
+          title: "File Too Large",
+          description: `${file.name} is too large. Please upload files smaller than 5MB.`,
+          variant: "destructive",
+        });
         return false;
       }
       return true;
     });
 
-    setUploadedFiles(prev => [...prev, ...validFiles]);
+    if (validFiles.length === 0) return;
+
+    // Add files to state as uploading
+    const newFiles = validFiles.map((file) => ({
+      id: `${Date.now()}-${Math.random()}`,
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      uploading: true,
+      uploaded: false,
+    }));
+
+    setUploadedFiles(prev => [...prev, ...newFiles]);
+
+    // Upload each file
+    for (let i = 0; i < validFiles.length; i++) {
+      const file = validFiles[i];
+      const fileState = newFiles[i];
+      
+      try {
+        const formData = new FormData();
+        formData.append('files', file);
+
+        const response = await fetch(`/api/upload/${token}`, {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error('Upload failed');
+        }
+
+        const result = await response.json();
+        const uploadedFile = result[0];
+
+        // Update file state to uploaded
+        setUploadedFiles(prev => {
+          const updated = prev.map(f => 
+            f.id === fileState.id 
+              ? { ...f, uploading: false, uploaded: true, url: uploadedFile.url }
+              : f
+          );
+          
+          // Update form data with uploaded files
+          const uploadedFilesList = updated
+            .filter(f => f.uploaded)
+            .map(f => ({ id: f.id, name: f.name, url: f.url }));
+          
+          updateFormData({ uploadedDocuments: uploadedFilesList });
+          
+          return updated;
+        });
+
+        toast({
+          title: "File Uploaded",
+          description: `${file.name} has been uploaded successfully.`,
+        });
+
+      } catch (error) {
+        console.error('File upload error:', error);
+        
+        // Remove failed file from list
+        setUploadedFiles(prev => prev.filter(f => f.id !== fileState.id));
+        
+        toast({
+          title: "Upload Failed",
+          description: `Failed to upload ${file.name}. Please try again.`,
+          variant: "destructive",
+        });
+      }
+    }
   };
 
   const handleFileRemove = (fileId: string) => {
@@ -143,30 +221,40 @@ export default function StepEight({ formData, updateFormData, onPrevious, onSubm
             {/* Uploaded Files List */}
             {uploadedFiles.length > 0 && (
               <div className="space-y-3">
-                <h4 className="font-medium text-sm">Uploaded Documents ({uploadedFiles.length}):</h4>
+                <h4 className="font-medium text-sm">Documents ({uploadedFiles.length}):</h4>
                 {uploadedFiles.map((file) => (
                   <div key={file.id} className="flex items-center justify-between p-3 border rounded-lg bg-gray-50">
                     <div className="flex items-center space-x-3">
-                      <FileText className="h-5 w-5 text-blue-600 flex-shrink-0" />
+                      {file.uploading ? (
+                        <Loader2 className="h-5 w-5 text-blue-600 animate-spin flex-shrink-0" />
+                      ) : file.uploaded ? (
+                        <Check className="h-5 w-5 text-green-600 flex-shrink-0" />
+                      ) : (
+                        <FileText className="h-5 w-5 text-blue-600 flex-shrink-0" />
+                      )}
                       <div className="min-w-0 flex-1">
                         <p className="font-medium text-sm truncate">{file.name}</p>
                         <p className="text-xs text-gray-500">
                           {(file.size / 1024 / 1024).toFixed(2)} MB
+                          {file.uploading && " - Uploading..."}
+                          {file.uploaded && " - Uploaded successfully"}
                         </p>
                       </div>
                     </div>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleFileRemove(file.id);
-                      }}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
+                    {!file.uploading && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleFileRemove(file.id);
+                        }}
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    )}
                   </div>
                 ))}
               </div>
