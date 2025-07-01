@@ -113,16 +113,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Submit application
   app.post("/api/applications", async (req, res) => {
     try {
-      // Debug logging
-      console.log('Received application data:', {
-        dateOfBirth: req.body.dateOfBirth,
-        agreementDate: req.body.agreementDate,
-        jobType: req.body.jobType,
-        dateOfBirthType: typeof req.body.dateOfBirth,
-        agreementDateType: typeof req.body.agreementDate,
-        jobTypeType: typeof req.body.jobType
-      });
-      
       // Convert date strings to Date objects and ensure required fields before validation
       const requestData = {
         ...req.body,
@@ -132,18 +122,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         jobType: req.body.jobType || 'general',
       };
       
-      console.log('After conversion:', {
-        dateOfBirth: requestData.dateOfBirth,
-        agreementDate: requestData.agreementDate,
-        dateOfBirthType: typeof requestData.dateOfBirth,
-        agreementDateType: typeof requestData.agreementDate,
-        jobType: requestData.jobType,
-        jobTypeType: typeof requestData.jobType
-      });
-      
       const applicationData = insertApplicationSchema.parse(requestData);
-      
-      console.log('Parsed application data jobType:', applicationData.jobType);
       
       // Validate token
       const tokenData = await storage.getApplicationToken(applicationData.tokenId);
@@ -185,6 +164,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Get applications error:', error);
       res.status(500).json({ error: 'Failed to get applications' });
+    }
+  });
+
+  // File upload endpoint
+  app.post("/api/upload/:token", upload.array('files', 5), async (req, res) => {
+    try {
+      const { token } = req.params;
+      const files = req.files as Express.Multer.File[];
+      
+      if (!files || files.length === 0) {
+        return res.status(400).json({ error: 'No files uploaded' });
+      }
+
+      // Validate token
+      const tokenData = await storage.getApplicationToken(token);
+      if (!tokenData || tokenData.expiresAt < new Date()) {
+        return res.status(400).json({ error: 'Invalid or expired token' });
+      }
+
+      const uploadedFiles = [];
+      
+      for (const file of files) {
+        try {
+          const result = await uploadFile(file, token);
+          uploadedFiles.push({
+            id: result.fileId,
+            name: file.originalname,
+            size: file.size,
+            type: file.mimetype,
+            url: result.url
+          });
+        } catch (error) {
+          console.error('File upload error:', error);
+          // Continue with other files even if one fails
+        }
+      }
+
+      res.json({ 
+        success: true, 
+        files: uploadedFiles 
+      });
+    } catch (error) {
+      console.error('Upload endpoint error:', error);
+      res.status(500).json({ error: 'Failed to upload files' });
     }
   });
 

@@ -1,9 +1,13 @@
-import { Client } from '@replit/object-storage';
 import multer from 'multer';
 import { Request } from 'express';
+import fs from 'fs';
+import path from 'path';
 
-// Initialize Replit Object Storage
-export const objectStorage = new Client();
+// Create uploads directory if it doesn't exist
+const uploadsDir = path.join(process.cwd(), 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
 
 // Configure multer for file uploads
 const storage = multer.memoryStorage();
@@ -45,26 +49,23 @@ export async function uploadFile(
   try {
     // Generate unique file ID
     const timestamp = Date.now();
-    const fileExtension = '.' + file.originalname.split('.').pop()?.toLowerCase();
     const fileId = `${applicationToken}/${timestamp}-${file.originalname.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
     
     // Upload to object storage
-    await objectStorage.uploadFromBuffer(
-      fileId,
-      file.buffer,
-      {
-        contentType: file.mimetype,
-        metadata: {
-          originalName: file.originalname,
-          uploadedAt: new Date().toISOString(),
-          applicationToken: applicationToken,
-          fileSize: file.size.toString()
-        }
-      }
-    );
+    const result = await objectStorage.put(fileId, file.buffer, {
+      'Content-Type': file.mimetype,
+      'X-Original-Name': file.originalname,
+      'X-Uploaded-At': new Date().toISOString(),
+      'X-Application-Token': applicationToken,
+      'X-File-Size': file.size.toString()
+    });
     
-    // Generate download URL
-    const url = await objectStorage.getDownloadUrl(fileId);
+    if (!result.success) {
+      throw new Error('Failed to upload to object storage');
+    }
+    
+    // Generate public URL
+    const url = `${process.env.REPLIT_DOMAIN || 'https://localhost:5000'}/api/files/${fileId}`;
     
     return { fileId, url };
   } catch (error) {
