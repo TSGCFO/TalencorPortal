@@ -36,7 +36,7 @@ export class DatabaseStorage implements IStorage {
     try {
       const [result] = await db
         .insert(applications)
-        .values(application)
+        .values([application])
         .returning();
       return result;
     } catch (error) {
@@ -64,7 +64,7 @@ export class DatabaseStorage implements IStorage {
   async createApplicationToken(token: InsertApplicationToken): Promise<ApplicationToken> {
     const [result] = await db
       .insert(applicationTokens)
-      .values(token)
+      .values([token])
       .returning();
     return result;
   }
@@ -96,7 +96,7 @@ export class DatabaseStorage implements IStorage {
   async createRecruiter(recruiter: InsertRecruiter): Promise<Recruiter> {
     const [result] = await db
       .insert(recruiters)
-      .values(recruiter)
+      .values([recruiter])
       .returning();
     return result;
   }
