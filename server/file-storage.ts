@@ -49,7 +49,7 @@ export async function uploadFile(
     const fileKey = `applications/${applicationToken}/${timestamp}-${sanitizedFilename}`;
     
     // Upload file to Replit Object Storage
-    await client.uploadFromBuffer(fileKey, file.buffer);
+    await client.uploadFromBytes(fileKey, file.buffer);
     
     console.log('File uploaded successfully to Replit Object Storage:', fileKey);
     
