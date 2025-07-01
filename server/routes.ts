@@ -112,7 +112,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Submit application
   app.post("/api/applications", async (req, res) => {
     try {
-      const applicationData = insertApplicationSchema.parse(req.body);
+      // Debug logging
+      console.log('Received application data:', {
+        dateOfBirth: req.body.dateOfBirth,
+        agreementDate: req.body.agreementDate,
+        dateOfBirthType: typeof req.body.dateOfBirth,
+        agreementDateType: typeof req.body.agreementDate
+      });
+      
+      // Convert date strings to Date objects before validation
+      const requestData = {
+        ...req.body,
+        dateOfBirth: req.body.dateOfBirth ? new Date(req.body.dateOfBirth) : undefined,
+        agreementDate: req.body.agreementDate ? new Date(req.body.agreementDate) : undefined,
+      };
+      
+      console.log('After conversion:', {
+        dateOfBirth: requestData.dateOfBirth,
+        agreementDate: requestData.agreementDate,
+        dateOfBirthType: typeof requestData.dateOfBirth,
+        agreementDateType: typeof requestData.agreementDate
+      });
+      
+      const applicationData = insertApplicationSchema.parse(requestData);
       
       // Validate token
       const tokenData = await storage.getApplicationToken(applicationData.tokenId);
@@ -127,6 +149,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ...applicationData,
         aptitudeScore,
         recruiterEmail: tokenData.recruiterEmail,
+        jobType: tokenData.jobType,
       });
       
       // Mark token as used
