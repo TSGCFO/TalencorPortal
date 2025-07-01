@@ -639,9 +639,17 @@ export default function RecruiterDashboard() {
           <div className="mb-8">
             <Card>
               <CardHeader>
-                <CardTitle className={`${isMobile ? 'text-lg' : 'text-xl'} flex items-center`}>
-                  <NotebookPen className="mr-2 text-primary" />
-                  Recent Applications
+                <CardTitle className={`${isMobile ? 'text-lg' : 'text-xl'} flex items-center justify-between`}>
+                  <div className="flex items-center">
+                    <NotebookPen className="mr-2 text-primary" />
+                    All Applications ({applications.length})
+                  </div>
+                  {applications.length > 0 && (
+                    <Button onClick={handleRefresh} size="sm" variant="outline">
+                      <RefreshCw className="h-4 w-4 mr-1" />
+                      Refresh
+                    </Button>
+                  )}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -650,58 +658,119 @@ export default function RecruiterDashboard() {
                 ) : applications.length === 0 ? (
                   <div className="text-center py-8 text-gray-500">No applications submitted yet</div>
                 ) : (
-                  <div className="space-y-4">
-                    {applications.slice(0, isMobile ? 3 : 5).map((app) => (
-                      <Card key={app.id} className={`${isMobile ? 'p-3' : 'p-6'}`}>
-                        <div className={`${isMobile ? 'space-y-3' : 'grid md:grid-cols-2 gap-6'}`}>
-                          <div>
-                            <h4 className={`${isMobile ? 'text-base' : 'text-lg'} font-semibold text-gray-900`}>{app.fullName}</h4>
-                            <div className={`${isMobile ? 'text-sm' : 'text-sm'} text-gray-600 space-y-1`}>
-                              <div className="flex items-center">
-                                <Mail className="h-3 w-3 mr-1" />
-                                {app.email}
-                              </div>
-                              <div className="flex items-center">
-                                <Phone className="h-3 w-3 mr-1" />
-                                {app.mobileNumber}
-                              </div>
-                              {!isMobile && (
-                                <>
-                                  <p>SIN: {app.sinNumber}</p>
-                                  <p>Legal Status: {app.legalStatus} | Transport: {app.transportation}</p>
-                                </>
-                              )}
+                  <div className="space-y-6">
+                    {applications.map((app) => (
+                      <Card key={app.id} className="border-l-4 border-l-primary">
+                        <CardHeader className="pb-2">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <h3 className="text-xl font-semibold text-gray-900">{app.fullName}</h3>
+                              <p className="text-gray-600">{app.email}</p>
                             </div>
-                          </div>
-                          <div className={`${isMobile ? 'flex justify-between items-center' : 'text-right'}`}>
                             <div className="flex items-center space-x-2">
-                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              <span className={`px-3 py-1 rounded-full text-sm font-medium ${
                                 app.aptitudeScore >= 8 ? 'bg-green-100 text-green-800' :
                                 app.aptitudeScore >= 6 ? 'bg-yellow-100 text-yellow-800' :
                                 'bg-red-100 text-red-800'
                               }`}>
-                                <Star className="h-3 w-3 inline mr-1" />
+                                <Star className="h-4 w-4 inline mr-1" />
                                 {app.aptitudeScore}/10
                               </span>
-                              <span className={`px-2 py-1 rounded text-xs ${
+                              <span className={`px-3 py-1 rounded text-sm ${
                                 app.status === 'completed' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'
                               }`}>
                                 {app.status}
                               </span>
                             </div>
-                            {!isMobile && (
-                              <div>
-                                <p className="text-xs text-gray-500 flex items-center">
-                                  <Calendar className="h-3 w-3 mr-1" />
-                                  {new Date(app.submittedAt).toLocaleDateString()}
-                                </p>
-                                <p className="text-xs text-gray-500">
-                                  {app.jobType} | {app.liftingCapability}
-                                </p>
-                              </div>
-                            )}
                           </div>
-                        </div>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="grid md:grid-cols-3 gap-6">
+                            {/* Personal Information */}
+                            <div>
+                              <h4 className="font-semibold text-gray-900 mb-3">Personal Details</h4>
+                              <div className="space-y-2 text-sm">
+                                <p><strong>Date of Birth:</strong> {new Date(app.dateOfBirth).toLocaleDateString()}</p>
+                                <p><strong>SIN:</strong> {app.sinNumber}</p>
+                                <p><strong>Mobile:</strong> {app.mobileNumber}</p>
+                                {app.whatsappNumber && <p><strong>WhatsApp:</strong> {app.whatsappNumber}</p>}
+                                <p><strong>Legal Status:</strong> {app.legalStatus}</p>
+                              </div>
+                            </div>
+
+                            {/* Address & Contact */}
+                            <div>
+                              <h4 className="font-semibold text-gray-900 mb-3">Address & Emergency</h4>
+                              <div className="space-y-2 text-sm">
+                                <p><strong>Address:</strong> {app.streetAddress}</p>
+                                <p>{app.city}, {app.province} {app.postalCode}</p>
+                                {app.majorIntersection && <p><strong>Intersection:</strong> {app.majorIntersection}</p>}
+                                <p><strong>Emergency Contact:</strong> {app.emergencyName}</p>
+                                <p><strong>Phone:</strong> {app.emergencyContact}</p>
+                                <p><strong>Relationship:</strong> {app.emergencyRelationship}</p>
+                              </div>
+                            </div>
+
+                            {/* Job Information */}
+                            <div>
+                              <h4 className="font-semibold text-gray-900 mb-3">Job Requirements</h4>
+                              <div className="space-y-2 text-sm">
+                                <p><strong>Position:</strong> {app.jobType}</p>
+                                <p><strong>Transportation:</strong> {app.transportation}</p>
+                                <p><strong>Lifting Capability:</strong> {app.liftingCapability}</p>
+                                <p><strong>Safety Shoes:</strong> {app.hasSafetyShoes ? 'Yes' : 'No'}</p>
+                                {app.safetyShoeType && <p><strong>Shoe Type:</strong> {app.safetyShoeType}</p>}
+                                <p><strong>Forklift Cert:</strong> {app.hasForklifCert ? 'Yes' : 'No'}</p>
+                                <p><strong>Background Check:</strong> {app.backgroundCheckConsent ? 'Consented' : 'Not Consented'}</p>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Work History */}
+                          {(app.lastCompanyName || app.companyType || app.jobResponsibilities) && (
+                            <div className="mt-6 pt-4 border-t">
+                              <h4 className="font-semibold text-gray-900 mb-3">Work History</h4>
+                              <div className="grid md:grid-cols-2 gap-4 text-sm">
+                                {app.lastCompanyName && <p><strong>Last Company:</strong> {app.lastCompanyName}</p>}
+                                {app.companyType && <p><strong>Company Type:</strong> {app.companyType}</p>}
+                                {app.jobResponsibilities && <p><strong>Responsibilities:</strong> {app.jobResponsibilities}</p>}
+                                {app.agencyOrDirect && <p><strong>Hire Type:</strong> {app.agencyOrDirect}</p>}
+                                {app.reasonForLeaving && <p><strong>Reason for Leaving:</strong> {app.reasonForLeaving}</p>}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Availability */}
+                          <div className="mt-6 pt-4 border-t">
+                            <h4 className="font-semibold text-gray-900 mb-3">Availability & Preferences</h4>
+                            <div className="grid md:grid-cols-2 gap-4 text-sm">
+                              <div>
+                                <p><strong>Commitment:</strong> {app.commitmentMonths} months</p>
+                                {app.classSchedule && <p><strong>Class Schedule:</strong> {app.classSchedule}</p>}
+                              </div>
+                              <div>
+                                {app.morningDays?.length > 0 && <p><strong>Morning Availability:</strong> {app.morningDays.join(', ')}</p>}
+                                {app.afternoonDays?.length > 0 && <p><strong>Afternoon Availability:</strong> {app.afternoonDays.join(', ')}</p>}
+                                {app.nightDays?.length > 0 && <p><strong>Night Availability:</strong> {app.nightDays.join(', ')}</p>}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Referral & Application Info */}
+                          <div className="mt-6 pt-4 border-t">
+                            <div className="flex justify-between items-center text-sm text-gray-500">
+                              <div>
+                                <p><strong>Submitted:</strong> {new Date(app.submittedAt).toLocaleString()}</p>
+                                <p><strong>Referral Source:</strong> {app.referralSource}</p>
+                                {app.referralInternetSource && <p><strong>Source Details:</strong> {app.referralInternetSource}</p>}
+                              </div>
+                              <div className="text-right">
+                                <p><strong>Token:</strong> {app.tokenId}</p>
+                                <p><strong>Application ID:</strong> {app.id}</p>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
                       </Card>
                     ))}
                   </div>
