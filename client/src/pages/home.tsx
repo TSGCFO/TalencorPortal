@@ -10,9 +10,9 @@ export default function HomePage() {
         <div className="text-center mb-16">
           <div className="mb-8">
             <Users className="text-6xl text-primary mb-4 mx-auto" size={96} />
-            <h1 className="text-5xl font-bold text-gray-900 mb-6">TalentCore Staffing</h1>
+            <h1 className="text-5xl font-bold text-gray-900 mb-6">Talencor Staffing</h1>
             <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-              Professional employment services with secure, streamlined application processes
+              Building long-lasting relationships with reliable staffing solutions, 24 hours a day, 7 days a week
             </p>
           </div>
           
@@ -38,11 +38,11 @@ export default function HomePage() {
               <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Shield className="h-8 w-8 text-primary" />
               </div>
-              <CardTitle className="text-xl font-semibold">Secure Portal</CardTitle>
+              <CardTitle className="text-xl font-semibold">Guaranteed Quality</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-gray-600">
-                Token-based secure links ensure only authorized applicants can access forms.
+                Each Talencor employee is carefully screened and tested. We provide the right people the first time.
               </p>
             </CardContent>
           </Card>
@@ -52,11 +52,11 @@ export default function HomePage() {
               <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
                 <ClipboardList className="h-8 w-8 text-success" />
               </div>
-              <CardTitle className="text-xl font-semibold">Complete Application</CardTitle>
+              <CardTitle className="text-xl font-semibold">Save Time & Money</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-gray-600">
-                Comprehensive form with enhanced UX while maintaining all required fields.
+                One phone call provides the right person. No payroll, deductions, or severance costs.
               </p>
             </CardContent>
           </Card>
@@ -66,11 +66,11 @@ export default function HomePage() {
               <div className="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Brain className="h-8 w-8 text-purple-600" />
               </div>
-              <CardTitle className="text-xl font-semibold">Integrated Testing</CardTitle>
+              <CardTitle className="text-xl font-semibold">24/7 Support</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-gray-600">
-                Built-in aptitude test with automatic scoring and evaluation.
+                Our 24/7 employer hotline ensures we provide excellent services with skilled, talented individuals ready.
               </p>
             </CardContent>
           </Card>

@@ -1,8 +1,8 @@
-# TalentCore Staffing Portal
+# Talencor Staffing Portal
 
 ## Overview
 
-This is a comprehensive employment application portal built for TalentCore Staffing, designed to streamline the recruitment process through secure, token-based application forms. The system provides a modern, multi-step application experience with built-in aptitude testing and document management capabilities.
+This is a comprehensive employment application portal built for Talencor Staffing, designed to streamline the recruitment process through secure, token-based application forms. The system provides a modern, multi-step application experience with built-in aptitude testing and document management capabilities.
 
 ## System Architecture
 
@@ -85,7 +85,16 @@ The application is configured for multiple deployment scenarios:
 
 ## Changelog
 
-- June 30, 2025: Complete TalentCore Staffing portal implementation
+- July 4, 2025: Company rebranding from TalentCore to Talencor
+  - Updated all instances of "TalentCore" to "Talencor" throughout the application
+  - Updated company tagline to reflect their mission: "Building long-lasting relationships with reliable staffing solutions, 24 hours a day, 7 days a week"
+  - Updated feature cards on home page to reflect Talencor's actual services:
+    - Guaranteed Quality: Carefully screened and tested employees
+    - Save Time & Money: No payroll, deductions, or severance costs
+    - 24/7 Support: Round-the-clock employer hotline with skilled individuals ready
+  - Maintained existing blue/indigo color scheme that aligns with their brand
+
+- June 30, 2025: Complete Talencor Staffing portal implementation
   - Built secure token-based application system
   - Implemented 8-step application form with validation
   - Added recruiter dashboard with link generation

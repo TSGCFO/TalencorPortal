@@ -312,7 +312,7 @@ export default function StepEight({ formData, updateFormData, onPrevious, onSubm
               By submitting this application, I certify that all information provided is true, complete, and accurate to the best of my knowledge. I understand that any false or misleading information may result in the rejection of my application or termination of employment.
             </p>
             <p className="mb-3">
-              I authorize TalentCore Staffing to verify the information provided and to conduct background checks as necessary. I consent to the collection, use, and disclosure of my personal information for the purposes of employment screening and placement.
+              I authorize Talencor Staffing to verify the information provided and to conduct background checks as necessary. I consent to the collection, use, and disclosure of my personal information for the purposes of employment screening and placement.
             </p>
             <p className="mb-3">
               I understand that this application does not guarantee employment and that employment, if offered, may be subject to satisfactory references, background checks, and other conditions.

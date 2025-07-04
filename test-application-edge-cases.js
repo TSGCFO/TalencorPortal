@@ -1,5 +1,5 @@
 /**
- * Edge Cases and Error Scenarios Test for TalentCore Application
+ * Edge Cases and Error Scenarios Test for Talencor Application
  * Tests validation, error handling, and boundary conditions
  */
 
@@ -332,7 +332,7 @@ function getValidApplicationData(token) {
 }
 
 // Run the tests
-console.log('TalentCore Application Edge Cases Test Suite');
+console.log('Talencor Application Edge Cases Test Suite');
 console.log('Testing validation, error handling, and boundary conditions...\n');
 
 testEdgeCases()

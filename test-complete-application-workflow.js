@@ -1,5 +1,5 @@
 /**
- * End-to-End Test for Complete TalentCore Application Workflow
+ * End-to-End Test for Complete Talencor Application Workflow
  * This test simulates the entire applicant journey through all 8 steps
  */
 
@@ -362,7 +362,7 @@ async function testCompleteApplicationWorkflow() {
 }
 
 // Run the test
-console.log('TalentCore Application Workflow End-to-End Test');
+console.log('Talencor Application Workflow End-to-End Test');
 console.log('Testing complete applicant journey through all 8 steps...\n');
 
 testCompleteApplicationWorkflow()
