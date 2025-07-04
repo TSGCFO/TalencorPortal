@@ -6,6 +6,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import HomePage from "@/pages/home";
 import RecruiterDashboard from "@/pages/recruiter-dashboard";
 import ApplicationForm from "@/pages/application-form";
+import ApplicationsList from "@/pages/applications-list";
+import ApplicationDetail from "@/pages/application-detail";
 import NotFound from "@/pages/not-found";
 
 // Route Protection Component
@@ -28,6 +30,9 @@ function Router() {
     <Switch>
       <Route path="/apply/:token" component={ApplicationForm} />
       <Route path="/recruiter" component={RecruiterDashboard} />
+      <Route path="/recruiter-dashboard" component={RecruiterDashboard} />
+      <Route path="/applications" component={ApplicationsList} />
+      <Route path="/application/:id" component={ApplicationDetail} />
       <Route path="/" component={HomePage} />
       <Route component={NotFound} />
     </Switch>

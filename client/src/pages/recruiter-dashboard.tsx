@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
@@ -644,14 +645,23 @@ export default function RecruiterDashboard() {
                 <CardTitle className={`${isMobile ? 'text-lg' : 'text-xl'} flex items-center justify-between`}>
                   <div className="flex items-center">
                     <NotebookPen className="mr-2 text-primary" />
-                    All Applications ({applications.length})
+                    Recent Applications ({applications.length})
                   </div>
-                  {applications.length > 0 && (
-                    <Button onClick={handleRefresh} size="sm" variant="outline">
-                      <RefreshCw className="h-4 w-4 mr-1" />
-                      Refresh
-                    </Button>
-                  )}
+                  <div className="flex items-center space-x-2">
+                    {applications.length > 0 && (
+                      <>
+                        <Link href="/applications">
+                          <Button size="sm" variant="outline">
+                            View All
+                          </Button>
+                        </Link>
+                        <Button onClick={handleRefresh} size="sm" variant="outline">
+                          <RefreshCw className="h-4 w-4 mr-1" />
+                          Refresh
+                        </Button>
+                      </>
+                    )}
+                  </div>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -660,126 +670,44 @@ export default function RecruiterDashboard() {
                 ) : applications.length === 0 ? (
                   <div className="text-center py-8 text-gray-500">No applications submitted yet</div>
                 ) : (
-                  <div className="space-y-6">
-                    {applications.map((app) => (
-                      <Card key={app.id} className="border-l-4 border-l-primary">
-                        <CardHeader className="pb-2">
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <h3 className="text-xl font-semibold text-gray-900">{app.fullName}</h3>
-                              <p className="text-gray-600">{app.email}</p>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                                app.aptitudeScore >= 8 ? 'bg-green-100 text-green-800' :
-                                app.aptitudeScore >= 6 ? 'bg-yellow-100 text-yellow-800' :
-                                'bg-red-100 text-red-800'
-                              }`}>
-                                <Star className="h-4 w-4 inline mr-1" />
-                                {app.aptitudeScore}/10
-                              </span>
-                              <span className={`px-3 py-1 rounded text-sm ${
-                                app.status === 'completed' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'
-                              }`}>
-                                {app.status}
-                              </span>
-                            </div>
-                          </div>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="grid md:grid-cols-3 gap-6">
-                            {/* Personal Information */}
-                            <div>
-                              <h4 className="font-semibold text-gray-900 mb-3">Personal Details</h4>
-                              <div className="space-y-2 text-sm">
-                                <p><strong>Date of Birth:</strong> {new Date(app.dateOfBirth).toLocaleDateString()}</p>
-                                <p><strong>SIN:</strong> {app.sinNumber}</p>
-                                <p><strong>Mobile:</strong> {app.mobileNumber}</p>
-                                {app.whatsappNumber && <p><strong>WhatsApp:</strong> {app.whatsappNumber}</p>}
-                                <p><strong>Legal Status:</strong> {app.legalStatus}</p>
-                              </div>
-                            </div>
-
-                            {/* Address & Contact */}
-                            <div>
-                              <h4 className="font-semibold text-gray-900 mb-3">Address & Emergency</h4>
-                              <div className="space-y-2 text-sm">
-                                <p><strong>Address:</strong> {app.streetAddress}</p>
-                                <p>{app.city}, {app.province} {app.postalCode}</p>
-                                {app.majorIntersection && <p><strong>Intersection:</strong> {app.majorIntersection}</p>}
-                                <p><strong>Emergency Contact:</strong> {app.emergencyName}</p>
-                                <p><strong>Phone:</strong> {app.emergencyContact}</p>
-                                <p><strong>Relationship:</strong> {app.emergencyRelationship}</p>
-                              </div>
-                            </div>
-
-                            {/* Job Information */}
-                            <div>
-                              <h4 className="font-semibold text-gray-900 mb-3">Job Requirements</h4>
-                              <div className="space-y-2 text-sm">
-                                <p><strong>Position:</strong> {app.jobType}</p>
-                                <p><strong>Transportation:</strong> {app.transportation}</p>
-                                <p><strong>Lifting Capability:</strong> {app.liftingCapability}</p>
-                                <p><strong>Safety Shoes:</strong> {app.hasSafetyShoes ? 'Yes' : 'No'}</p>
-                                {app.safetyShoeType && <p><strong>Shoe Type:</strong> {app.safetyShoeType}</p>}
-                                <p><strong>Forklift Cert:</strong> {app.hasForklifCert ? 'Yes' : 'No'}</p>
-                                <p><strong>Background Check:</strong> {app.backgroundCheckConsent ? 'Consented' : 'Not Consented'}</p>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Work History */}
-                          {(app.lastCompanyName || app.companyType || app.jobResponsibilities) && (
-                            <div className="mt-6 pt-4 border-t">
-                              <h4 className="font-semibold text-gray-900 mb-3">Work History</h4>
-                              <div className="grid md:grid-cols-2 gap-4 text-sm">
-                                {app.lastCompanyName && <p><strong>Last Company:</strong> {app.lastCompanyName}</p>}
-                                {app.companyType && <p><strong>Company Type:</strong> {app.companyType}</p>}
-                                {app.jobResponsibilities && <p><strong>Responsibilities:</strong> {app.jobResponsibilities}</p>}
-                                {app.agencyOrDirect && <p><strong>Hire Type:</strong> {app.agencyOrDirect}</p>}
-                                {app.reasonForLeaving && <p><strong>Reason for Leaving:</strong> {app.reasonForLeaving}</p>}
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Availability */}
-                          <div className="mt-6 pt-4 border-t">
-                            <h4 className="font-semibold text-gray-900 mb-3">Availability & Preferences</h4>
-                            <div className="grid md:grid-cols-2 gap-4 text-sm">
+                  <div className="space-y-4">
+                    {applications.length > 5 && (
+                      <div className="text-center pb-2">
+                        <p className="text-sm text-gray-600">Showing 5 most recent applications</p>
+                      </div>
+                    )}
+                    {applications.slice(0, 5).map((app) => (
+                      <Card key={app.id} className="hover:shadow-md transition-shadow cursor-pointer">
+                        <Link href={`/application/${app.id}`}>
+                          <CardContent className="p-4">
+                            <div className="flex justify-between items-center">
                               <div>
-                                <p><strong>Commitment:</strong> {app.commitmentMonths} months</p>
-                                {app.classSchedule && <p><strong>Class Schedule:</strong> {
-                                  typeof app.classSchedule === 'object' 
-                                    ? Object.entries(app.classSchedule as Record<string, string>)
-                                        .filter(([_, time]) => time)
-                                        .map(([day, time]) => `${day.charAt(0).toUpperCase() + day.slice(1)}: ${time}`)
-                                        .join(', ')
-                                    : String(app.classSchedule)
-                                }</p>}
+                                <h3 className="text-lg font-semibold text-primary hover:underline">{app.fullName}</h3>
+                                <p className="text-sm text-gray-600">{app.email}</p>
+                                <p className="text-xs text-gray-500 mt-1">Submitted: {new Date(app.submittedAt).toLocaleDateString()}</p>
                               </div>
-                              <div>
-                                {app.morningDays?.length > 0 && <p><strong>Morning Availability:</strong> {app.morningDays.join(', ')}</p>}
-                                {app.afternoonDays?.length > 0 && <p><strong>Afternoon Availability:</strong> {app.afternoonDays.join(', ')}</p>}
-                                {app.nightDays?.length > 0 && <p><strong>Night Availability:</strong> {app.nightDays.join(', ')}</p>}
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Referral & Application Info */}
-                          <div className="mt-6 pt-4 border-t">
-                            <div className="flex justify-between items-center text-sm text-gray-500">
-                              <div>
-                                <p><strong>Submitted:</strong> {new Date(app.submittedAt).toLocaleString()}</p>
-                                <p><strong>Referral Source:</strong> {app.referralSource}</p>
-                                {app.referralInternetSource && <p><strong>Source Details:</strong> {app.referralInternetSource}</p>}
-                              </div>
-                              <div className="text-right">
-                                <p><strong>Token:</strong> {app.tokenId}</p>
-                                <p><strong>Application ID:</strong> {app.id}</p>
+                              <div className="flex flex-col items-end space-y-2">
+                                <Badge variant={app.jobType === 'warehouse' ? 'default' : 
+                                               app.jobType === 'manufacturing' ? 'secondary' : 'outline'}>
+                                  {app.jobType}
+                                </Badge>
+                                <div className="flex items-center space-x-2">
+                                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                    app.aptitudeScore >= 8 ? 'bg-green-100 text-green-800' :
+                                    app.aptitudeScore >= 6 ? 'bg-yellow-100 text-yellow-800' :
+                                    'bg-red-100 text-red-800'
+                                  }`}>
+                                    <Star className="h-3 w-3 inline mr-1" />
+                                    {app.aptitudeScore}/10
+                                  </span>
+                                  <Badge variant={app.status === 'completed' ? 'default' : 'outline'} className="text-xs">
+                                    {app.status}
+                                  </Badge>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </CardContent>
+                          </CardContent>
+                        </Link>
                       </Card>
                     ))}
                   </div>
