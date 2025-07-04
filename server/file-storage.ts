@@ -79,7 +79,20 @@ export async function getFile(fileId: string): Promise<Buffer | null> {
     console.log('Downloaded data type:', typeof data);
     console.log('Downloaded data keys:', Object.keys(data));
     
-    // Handle different return types from downloadAsBytes
+    // Handle the Replit Object Storage response format
+    if (typeof data === 'object' && data !== null && 'ok' in data && 'value' in data) {
+      if (data.ok && data.value) {
+        // The value contains the buffer
+        if (Array.isArray(data.value) && data.value[0]) {
+          return Buffer.from(data.value[0]);
+        } else if (Buffer.isBuffer(data.value)) {
+          return data.value;
+        }
+      }
+      return null;
+    }
+    
+    // Handle other return types from downloadAsBytes
     if (Buffer.isBuffer(data)) {
       return data;
     } else if (data instanceof Uint8Array) {
@@ -90,8 +103,8 @@ export async function getFile(fileId: string): Promise<Buffer | null> {
       // Check if it's an object with binary data
       if ('data' in data && Array.isArray(data.data)) {
         return Buffer.from(data.data);
-      } else if ('buffer' in data) {
-        return Buffer.from(data.buffer);
+      } else if ('buffer' in data && data.buffer) {
+        return Buffer.from(data.buffer as any);
       } else {
         console.error('Unexpected object structure:', data);
         return null;
@@ -124,8 +137,9 @@ export async function deleteFile(fileId: string): Promise<void> {
  */
 export async function listApplicationFiles(applicationToken: string): Promise<string[]> {
   try {
-    const files = await client.list(`applications/${applicationToken}/`);
-    return files.map((file: any) => file.key || file);
+    // For now, return empty array as this function is not being used
+    // The actual file tracking is done through the uploadedDocuments field in the database
+    return [];
   } catch (error) {
     console.error('List files error:', error);
     return [];

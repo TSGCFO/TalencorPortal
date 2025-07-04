@@ -38,10 +38,24 @@ export default function StepEight({ formData, updateFormData, onPrevious, onSubm
     updateFormData({ [field]: value });
   };
 
-  // Set current date as default
+  // Set current date as default and load existing files
   useEffect(() => {
     if (!formData.agreementDate) {
       handleInputChange("agreementDate", new Date());
+    }
+    
+    // Load previously uploaded files if any
+    if (formData.uploadedDocuments && Array.isArray(formData.uploadedDocuments)) {
+      const existingFiles = formData.uploadedDocuments.map((doc: any) => ({
+        id: doc.id || `existing-${Date.now()}-${Math.random()}`,
+        name: doc.name,
+        size: doc.size || 0,
+        type: doc.type || 'application/octet-stream',
+        url: doc.url,
+        uploaded: true,
+        uploading: false,
+      }));
+      setUploadedFiles(existingFiles);
     }
   }, []);
 
@@ -109,7 +123,11 @@ export default function StepEight({ formData, updateFormData, onPrevious, onSubm
         }
 
         const result = await response.json();
-        const uploadedFile = result[0];
+        const uploadedFile = result.files?.[0];
+
+        if (!uploadedFile) {
+          throw new Error('No file data returned from server');
+        }
 
         // Update file state to uploaded
         setUploadedFiles(prev => {
@@ -121,7 +139,7 @@ export default function StepEight({ formData, updateFormData, onPrevious, onSubm
           
           // Update form data with uploaded files
           const uploadedFilesList = updated
-            .filter(f => f.uploaded)
+            .filter((f): f is UploadedFile & { url: string } => f.uploaded === true && typeof f.url === 'string')
             .map(f => ({ id: f.id, name: f.name, url: f.url }));
           
           updateFormData({ uploadedDocuments: uploadedFilesList });
@@ -155,7 +173,7 @@ export default function StepEight({ formData, updateFormData, onPrevious, onSubm
       
       // Update form data with remaining uploaded files
       const uploadedFilesList = updated
-        .filter(f => f.uploaded)
+        .filter((f): f is UploadedFile & { url: string } => f.uploaded === true && typeof f.url === 'string')
         .map(f => ({ id: f.id, name: f.name, url: f.url }));
       
       updateFormData({ uploadedDocuments: uploadedFilesList });

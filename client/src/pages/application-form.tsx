@@ -164,9 +164,13 @@ export default function ApplicationForm() {
       nightDays: formData.nightDays || [],
       aptitudeAnswers: formData.aptitudeAnswers || {},
       aptitudeScore: formData.aptitudeScore || 0,
-      // Convert date strings to Date objects
-      dateOfBirth: formData.dateOfBirth ? new Date(formData.dateOfBirth) : new Date(),
-      agreementDate: formData.agreementDate ? new Date(formData.agreementDate) : new Date(),
+      // Convert date strings to Date objects with proper validation
+      dateOfBirth: formData.dateOfBirth 
+        ? (formData.dateOfBirth instanceof Date ? formData.dateOfBirth : new Date(formData.dateOfBirth))
+        : new Date('1990-01-01'), // Default date if missing
+      agreementDate: formData.agreementDate 
+        ? (formData.agreementDate instanceof Date ? formData.agreementDate : new Date(formData.agreementDate))
+        : new Date(), // Current date as default for agreement
     } as InsertApplication;
 
     // Clear saved progress on successful submission
