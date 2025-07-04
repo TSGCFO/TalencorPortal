@@ -234,7 +234,7 @@ export default function ApplicationForm() {
             <CardContent className="pt-6">
               <div className="mb-6 relative">
                 <div className="absolute inset-0 bg-green-400 rounded-full blur-3xl opacity-20"></div>
-                <CheckCircle className="relative text-success mb-4 mx-auto animate-pulse-subtle" size={120} />
+                <CheckCircle className="relative text-green-600 mb-4 mx-auto animate-pulse-subtle" size={120} />
               </div>
               <h2 className="text-4xl font-bold text-gradient mb-4">Application Submitted Successfully!</h2>
               <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
@@ -244,19 +244,19 @@ export default function ApplicationForm() {
                 <h3 className="font-bold text-primary text-lg mb-3">What Happens Next:</h3>
                 <ul className="text-base text-foreground space-y-2">
                   <li className="flex items-start">
-                    <CheckCircle className="h-5 w-5 text-success mr-2 mt-0.5 flex-shrink-0" />
+                    <CheckCircle className="h-5 w-5 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
                     <span>You will receive a confirmation email shortly</span>
                   </li>
                   <li className="flex items-start">
-                    <CheckCircle className="h-5 w-5 text-success mr-2 mt-0.5 flex-shrink-0" />
+                    <CheckCircle className="h-5 w-5 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
                     <span>Our recruitment team will review your application</span>
                   </li>
                   <li className="flex items-start">
-                    <CheckCircle className="h-5 w-5 text-success mr-2 mt-0.5 flex-shrink-0" />
+                    <CheckCircle className="h-5 w-5 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
                     <span>We'll contact you if your profile matches our current opportunities</span>
                   </li>
                   <li className="flex items-start">
-                    <CheckCircle className="h-5 w-5 text-success mr-2 mt-0.5 flex-shrink-0" />
+                    <CheckCircle className="h-5 w-5 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
                     <span>Keep an eye on your email for updates</span>
                   </li>
                 </ul>

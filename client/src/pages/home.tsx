@@ -79,7 +79,7 @@ export default function HomePage() {
               <span>10,000+ Placements</span>
             </div>
             <div className="flex items-center gap-2">
-              <Star className="h-5 w-5 text-warning fill-warning" />
+              <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
               <span>4.9/5 Client Rating</span>
             </div>
           </div>

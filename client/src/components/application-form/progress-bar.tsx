@@ -91,7 +91,7 @@ export default function ProgressBar({ currentStep, totalSteps }: ProgressBarProp
                 index + 1 === currentStep 
                   ? "font-bold text-primary scale-105" 
                   : index + 1 < currentStep
-                  ? "text-success font-medium"
+                  ? "text-green-600 font-medium"
                   : "text-muted-foreground"
               )}
             >
@@ -100,7 +100,7 @@ export default function ProgressBar({ currentStep, totalSteps }: ProgressBarProp
                 index + 1 === currentStep 
                   ? "bg-primary text-white shadow-lg scale-110" 
                   : index + 1 < currentStep
-                  ? "bg-success text-white"
+                  ? "bg-green-600 text-white"
                   : "bg-gray-200 text-gray-500"
               )}>
                 {index + 1 < currentStep ? (

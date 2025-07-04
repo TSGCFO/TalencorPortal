@@ -189,7 +189,7 @@
   }
   
   .modern-card-primary {
-    @apply bg-gradient-to-br from-talencor-600 to-talencor-700 text-white rounded-xl card-shadow hover-lift;
+    @apply bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-xl card-shadow hover-lift;
   }
 }
 
