@@ -364,7 +364,7 @@ export default function StepEight({ formData, updateFormData, onPrevious, onSubm
           <Button 
             onClick={onSubmit} 
             disabled={isSubmitting || !formData.agreementName || !formData.agreementDate || !formData.termsAccepted}
-            className="bg-success hover:bg-green-700"
+            className="bg-green-600 hover:bg-green-700 text-white"
           >
             {isSubmitting ? (
               <>Submitting...</>
