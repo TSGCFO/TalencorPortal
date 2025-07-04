@@ -130,10 +130,11 @@ export default function RecruiterDashboard() {
   const { data: applications = [], isLoading } = useQuery<Application[]>({
     queryKey: ["/api/applications", newLinkData.recruiterEmail],
     queryFn: async () => {
-      const response = await fetch(`/api/applications?recruiterEmail=${newLinkData.recruiterEmail}`);
+      const response = await fetch(`/api/applications?recruiterEmail=${encodeURIComponent(newLinkData.recruiterEmail)}`);
       if (!response.ok) throw new Error('Failed to fetch applications');
       return response.json();
-    }
+    },
+    enabled: !!newLinkData.recruiterEmail
   });
 
   const { data: tokens = [] } = useQuery({
@@ -142,7 +143,8 @@ export default function RecruiterDashboard() {
       const response = await fetch(`/api/tokens/${encodeURIComponent(newLinkData.recruiterEmail)}`);
       if (!response.ok) throw new Error('Failed to fetch tokens');
       return response.json();
-    }
+    },
+    enabled: !!newLinkData.recruiterEmail
   });
 
   // PWA Install prompt

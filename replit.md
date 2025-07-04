@@ -85,6 +85,12 @@ The application is configured for multiple deployment scenarios:
 
 ## Changelog
 
+- July 4, 2025: Fixed recruiter dashboard data loading issues
+  - Fixed API query encoding for recruiter email parameter
+  - Added enabled condition to prevent queries without valid email
+  - Dashboard now properly displays applications and generated links
+  - Resolved "Recruiter email is required" API error
+
 - July 4, 2025: Company branding implementation with custom logo
   - Created TalencorLogo React component featuring clean, modern design
   - Integrated logo throughout application:
