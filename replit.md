@@ -85,6 +85,19 @@ The application is configured for multiple deployment scenarios:
 
 ## Changelog
 
+- July 4, 2025: Company branding implementation with custom logo
+  - Created TalencorLogo React component featuring clean, modern design
+  - Integrated logo throughout application:
+    - Home page hero section
+    - Recruiter dashboard header
+    - Application form headers (both main form and submitted state)
+  - Updated all CSS color variables to use professional blue palette:
+    - Primary: Blue 600 (#2563eb)
+    - Background: Blue 50 (#eff6ff)
+    - Muted: Blue 100 (#dbeafe)
+  - Logo includes optional text display and responsive sizing (sm/md/lg)
+  - Note: Original vector logo files (.ai, .eps, .pdf) stored in talencorLogos directory
+
 - July 4, 2025: Company rebranding from TalentCore to Talencor
   - Updated all instances of "TalentCore" to "Talencor" throughout the application
   - Updated company tagline to reflect their mission: "Building long-lasting relationships with reliable staffing solutions, 24 hours a day, 7 days a week"

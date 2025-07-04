@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import TalencorLogo from "@/components/talencor-logo";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -319,16 +320,18 @@ export default function RecruiterDashboard() {
   ] as const;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted">
       {/* Mobile Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="px-4 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center">
-              <Users className={`${isMobile ? 'text-xl' : 'text-2xl'} text-primary mr-2`} />
-              <h1 className={`${isMobile ? 'text-lg' : 'text-2xl'} font-bold text-gray-900`}>
-                {isMobile ? 'TalentCore' : 'Recruiter Dashboard'}
-              </h1>
+              <TalencorLogo size={isMobile ? "sm" : "md"} />
+              {!isMobile && (
+                <h1 className="text-2xl font-bold text-gray-900 ml-3">
+                  Recruiter Dashboard
+                </h1>
+              )}
             </div>
             
             {/* Mobile action buttons */}

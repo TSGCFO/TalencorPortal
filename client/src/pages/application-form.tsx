@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { FileText, Home, CheckCircle } from "lucide-react";
+import TalencorLogo from "@/components/talencor-logo";
 import ProgressBar from "@/components/application-form/progress-bar";
 import StepOne from "@/components/application-form/step-one";
 import StepTwo from "@/components/application-form/step-two";
@@ -215,8 +216,8 @@ export default function ApplicationForm() {
         <div className="bg-white shadow-sm border-b">
           <div className="container mx-auto px-4 py-4">
             <div className="flex items-center">
-              <FileText className="text-2xl text-primary mr-3" />
-              <h1 className="text-2xl font-bold text-gray-900">Employment Application</h1>
+              <TalencorLogo size="md" />
+              <h1 className="text-2xl font-bold text-gray-900 ml-3">Employment Application</h1>
             </div>
           </div>
         </div>
@@ -284,8 +285,8 @@ export default function ApplicationForm() {
       <div className="bg-white shadow-sm border-b">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center">
-            <FileText className="text-2xl text-primary mr-3" />
-            <h1 className="text-2xl font-bold text-gray-900">Employment Application</h1>
+            <TalencorLogo size="md" />
+            <h1 className="text-2xl font-bold text-gray-900 ml-3">Employment Application</h1>
           </div>
         </div>
       </div>
