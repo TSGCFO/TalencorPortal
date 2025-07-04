@@ -320,15 +320,23 @@ export default function RecruiterDashboard() {
   ] as const;
 
   return (
-    <div className="min-h-screen bg-muted">
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Animated Background */}
+      <div className="absolute inset-0 gradient-bg">
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-10 right-10 w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-float"></div>
+          <div className="absolute bottom-10 left-10 w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-float" style={{ animationDelay: '3s' }}></div>
+        </div>
+      </div>
+      
       {/* Mobile Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="relative z-10 glass-effect shadow-lg border-b border-white/20">
         <div className="px-4 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center">
               <TalencorLogo size={isMobile ? "sm" : "md"} />
               {!isMobile && (
-                <h1 className="text-2xl font-bold text-gray-900 ml-3">
+                <h1 className="text-3xl font-bold text-gradient ml-4">
                   Recruiter Dashboard
                 </h1>
               )}
@@ -500,31 +508,63 @@ export default function RecruiterDashboard() {
 
         {/* Overview Tab - Stats Cards */}
         {(!isMobile || activeTab === 'overview') && (
-          <div className={`${isMobile ? 'space-y-4' : 'grid lg:grid-cols-2 gap-8'} mb-8`}>
+          <div className={`${isMobile ? 'space-y-4' : 'space-y-8'} mb-8`}>
+            <div className="text-center animate-fade-in">
+              <h2 className="text-3xl font-bold text-gradient mb-2">Dashboard Overview</h2>
+              <p className="text-muted-foreground">Track your recruitment progress in real-time</p>
+            </div>
+            
             {/* Stats Grid */}
-            <div className={`${isMobile ? 'grid grid-cols-2 gap-3' : 'grid grid-cols-2 gap-4'}`}>
-              <Card>
-                <CardContent className={`${isMobile ? 'p-4' : 'p-6'} text-center`}>
-                  <div className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold text-primary mb-2`}>{stats.total}</div>
-                  <div className={`${isMobile ? 'text-xs' : 'text-sm'} text-gray-600`}>Total Applications</div>
+            <div className={`${isMobile ? 'grid grid-cols-2 gap-4' : 'grid grid-cols-4 gap-6'}`}>
+              <Card className="group modern-card hover-glow relative overflow-hidden">
+                <div className="absolute inset-0 talencor-gradient opacity-0 group-hover:opacity-10 transition-opacity duration-500" />
+                <CardContent className={`${isMobile ? 'p-6' : 'p-8'} text-center relative`}>
+                  <div className="mb-3">
+                    <div className="w-12 h-12 rounded-xl talencor-gradient-subtle mx-auto flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <Users className="h-6 w-6 text-primary" />
+                    </div>
+                  </div>
+                  <div className={`${isMobile ? 'text-3xl' : 'text-4xl'} font-bold text-gradient mb-2`}>{stats.total}</div>
+                  <div className={`${isMobile ? 'text-sm' : 'text-base'} text-muted-foreground font-medium`}>Total Applications</div>
                 </CardContent>
               </Card>
-              <Card>
-                <CardContent className={`${isMobile ? 'p-4' : 'p-6'} text-center`}>
-                  <div className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold text-green-600 mb-2`}>{stats.completed}</div>
-                  <div className={`${isMobile ? 'text-xs' : 'text-sm'} text-gray-600`}>Completed</div>
+              
+              <Card className="group modern-card hover-glow relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-green-100 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <CardContent className={`${isMobile ? 'p-6' : 'p-8'} text-center relative`}>
+                  <div className="mb-3">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-100 to-green-200 mx-auto flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <CheckCircle className="h-6 w-6 text-green-600" />
+                    </div>
+                  </div>
+                  <div className={`${isMobile ? 'text-3xl' : 'text-4xl'} font-bold text-green-600 mb-2`}>{stats.completed}</div>
+                  <div className={`${isMobile ? 'text-sm' : 'text-base'} text-muted-foreground font-medium`}>Completed</div>
                 </CardContent>
               </Card>
-              <Card>
-                <CardContent className={`${isMobile ? 'p-4' : 'p-6'} text-center`}>
-                  <div className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold text-yellow-600 mb-2`}>{stats.pending}</div>
-                  <div className={`${isMobile ? 'text-xs' : 'text-sm'} text-gray-600`}>Pending</div>
+              
+              <Card className="group modern-card hover-glow relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-yellow-50 to-yellow-100 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <CardContent className={`${isMobile ? 'p-6' : 'p-8'} text-center relative`}>
+                  <div className="mb-3">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-100 to-yellow-200 mx-auto flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <Clock className="h-6 w-6 text-yellow-600" />
+                    </div>
+                  </div>
+                  <div className={`${isMobile ? 'text-3xl' : 'text-4xl'} font-bold text-yellow-600 mb-2`}>{stats.pending}</div>
+                  <div className={`${isMobile ? 'text-sm' : 'text-base'} text-muted-foreground font-medium`}>Pending</div>
                 </CardContent>
               </Card>
-              <Card>
-                <CardContent className={`${isMobile ? 'p-4' : 'p-6'} text-center`}>
-                  <div className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold text-blue-600 mb-2`}>{stats.avgScore}</div>
-                  <div className={`${isMobile ? 'text-xs' : 'text-sm'} text-gray-600`}>Avg Score</div>
+              
+              <Card className="group modern-card hover-glow relative overflow-hidden">
+                <div className="absolute inset-0 talencor-gradient-subtle opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <CardContent className={`${isMobile ? 'p-6' : 'p-8'} text-center relative`}>
+                  <div className="mb-3">
+                    <div className="w-12 h-12 rounded-xl talencor-gradient mx-auto flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <Star className="h-6 w-6 text-white" />
+                    </div>
+                  </div>
+                  <div className={`${isMobile ? 'text-3xl' : 'text-4xl'} font-bold text-gradient mb-2`}>{stats.avgScore}</div>
+                  <div className={`${isMobile ? 'text-sm' : 'text-base'} text-muted-foreground font-medium`}>Avg Score</div>
                 </CardContent>
               </Card>
             </div>
