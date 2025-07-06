@@ -240,7 +240,7 @@ export default function ApplicationForm() {
               <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
                 Thank you for submitting your application. Our team will review your information and contact you within 2-3 business days.
               </p>
-              <div className="talencor-gradient-subtle p-6 rounded-xl text-left mb-8 border border-blue-200">
+              <div className="talencor-gradient-subtle p-6 rounded-xl text-left mb-8 border border-orange-200">
                 <h3 className="font-bold text-primary text-lg mb-3">What Happens Next:</h3>
                 <ul className="text-base text-foreground space-y-2">
                   <li className="flex items-start">
@@ -306,9 +306,9 @@ export default function ApplicationForm() {
       {/* Animated Background */}
       <div className="absolute inset-0 gradient-bg">
         <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-40 left-20 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-float"></div>
-          <div className="absolute bottom-40 right-20 w-72 h-72 bg-blue-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-float" style={{ animationDelay: '3s' }}></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-float" style={{ animationDelay: '6s' }}></div>
+          <div className="absolute top-40 left-20 w-72 h-72 bg-orange-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-float"></div>
+          <div className="absolute bottom-40 right-20 w-72 h-72 bg-amber-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-float" style={{ animationDelay: '3s' }}></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-orange-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-float" style={{ animationDelay: '6s' }}></div>
         </div>
       </div>
       

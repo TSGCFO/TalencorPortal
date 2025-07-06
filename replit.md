@@ -85,6 +85,16 @@ The application is configured for multiple deployment scenarios:
 
 ## Changelog
 
+- July 6, 2025: Implemented new Talencor company logo and golden orange branding
+  - Replaced SVG-based logo component with actual company logo image (Design (1)_1751770740359.png)
+  - Updated entire color scheme from blue to golden orange to match logo colors:
+    - Primary colors: Orange 500 (#f97316) to Amber 600 (#d97706)
+    - Updated all CSS variables to golden orange palette (hsl(38, 90%, ...))
+    - Changed all hardcoded blue color classes to orange/amber equivalents
+  - Updated gradients, backgrounds, and accents across all pages
+  - Logo now displays the official hexagonal golden badge design
+  - Color updates applied to home page, recruiter dashboard, application form, and all components
+
 - July 4, 2025: Fixed recruiter dashboard data loading issues
   - Fixed API query encoding for recruiter email parameter
   - Added enabled condition to prevent queries without valid email

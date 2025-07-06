@@ -326,8 +326,8 @@ export default function RecruiterDashboard() {
       {/* Animated Background */}
       <div className="absolute inset-0 gradient-bg">
         <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-10 right-10 w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-float"></div>
-          <div className="absolute bottom-10 left-10 w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-float" style={{ animationDelay: '3s' }}></div>
+          <div className="absolute top-10 right-10 w-96 h-96 bg-orange-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-float"></div>
+          <div className="absolute bottom-10 left-10 w-96 h-96 bg-amber-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-float" style={{ animationDelay: '3s' }}></div>
         </div>
       </div>
       
@@ -476,7 +476,7 @@ export default function RecruiterDashboard() {
                   )}
                   {/* Badge for active links */}
                   {tab.id === 'links' && tokens.filter((t: any) => !t.usedAt).length > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                       {tokens.filter((t: any) => !t.usedAt).length}
                     </span>
                   )}
@@ -788,7 +788,7 @@ export default function RecruiterDashboard() {
                                 {token.applicantEmail}
                               </p>
                               <span className={`px-2 py-1 rounded text-xs ${
-                                token.usedAt ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
+                                token.usedAt ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'
                               }`}>
                                 {token.usedAt ? 'Used' : 'Active'}
                               </span>

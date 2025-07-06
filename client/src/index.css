@@ -3,40 +3,40 @@
 @tailwind utilities;
 
 :root {
-  /* Brand Colors - Talencor Blue Palette */
-  --talencor-50: hsl(203, 89%, 97%);
-  --talencor-100: hsl(203, 89%, 94%);
-  --talencor-200: hsl(203, 89%, 87%);
-  --talencor-300: hsl(203, 89%, 75%);
-  --talencor-400: hsl(203, 89%, 55%);
-  --talencor-500: hsl(203, 89%, 45%);
-  --talencor-600: hsl(203, 89%, 35%);
-  --talencor-700: hsl(203, 89%, 24%);
-  --talencor-800: hsl(203, 89%, 18%);
-  --talencor-900: hsl(203, 89%, 12%);
+  /* Brand Colors - Talencor Golden Orange Palette */
+  --talencor-50: hsl(38, 90%, 97%);
+  --talencor-100: hsl(38, 90%, 94%);
+  --talencor-200: hsl(38, 90%, 87%);
+  --talencor-300: hsl(38, 90%, 75%);
+  --talencor-400: hsl(38, 90%, 65%);
+  --talencor-500: hsl(38, 90%, 55%);
+  --talencor-600: hsl(38, 85%, 50%);
+  --talencor-700: hsl(35, 80%, 45%);
+  --talencor-800: hsl(33, 75%, 40%);
+  --talencor-900: hsl(30, 70%, 30%);
   
   /* System Colors */
   --background: hsl(0, 0%, 100%);
-  --foreground: hsl(203, 89%, 12%);
-  --muted: hsl(203, 89%, 97%);
-  --muted-foreground: hsl(203, 40%, 40%);
+  --foreground: hsl(30, 70%, 20%);
+  --muted: hsl(38, 90%, 97%);
+  --muted-foreground: hsl(35, 40%, 40%);
   --popover: hsl(0, 0%, 100%);
-  --popover-foreground: hsl(203, 89%, 12%);
+  --popover-foreground: hsl(30, 70%, 20%);
   --card: hsl(0, 0%, 100%);
-  --card-foreground: hsl(203, 89%, 12%);
-  --border: hsl(203, 30%, 92%);
-  --input: hsl(203, 30%, 92%);
-  --primary: hsl(203, 89%, 24%);
+  --card-foreground: hsl(30, 70%, 20%);
+  --border: hsl(38, 30%, 92%);
+  --input: hsl(38, 30%, 92%);
+  --primary: hsl(35, 80%, 45%);
   --primary-foreground: hsl(0, 0%, 100%);
-  --secondary: hsl(203, 89%, 35%);
+  --secondary: hsl(38, 85%, 50%);
   --secondary-foreground: hsl(0, 0%, 100%);
-  --accent: hsl(203, 89%, 45%);
+  --accent: hsl(38, 90%, 55%);
   --accent-foreground: hsl(0, 0%, 100%);
   --destructive: hsl(0, 84.2%, 60.2%);
   --destructive-foreground: hsl(60, 9.1%, 97.8%);
   --success: hsl(142, 71%, 45%);
   --warning: hsl(38, 92%, 50%);
-  --ring: hsl(203, 89%, 45%);
+  --ring: hsl(38, 90%, 55%);
   --radius: 0.5rem;
   
   /* Shadows */
@@ -189,7 +189,7 @@
   }
   
   .modern-card-primary {
-    @apply bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-xl card-shadow hover-lift;
+    @apply bg-gradient-to-br from-orange-500 to-amber-600 text-white rounded-xl card-shadow hover-lift;
   }
 }
 

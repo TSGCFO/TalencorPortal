@@ -103,8 +103,8 @@ export default function StepSeven({ formData, updateFormData, onNext, onPrevious
         </div>
 
         {formData.aptitudeScore !== undefined && (
-          <div className="text-center p-4 bg-blue-50 rounded-lg">
-            <p className="text-blue-800 font-semibold">
+          <div className="text-center p-4 bg-orange-50 rounded-lg">
+            <p className="text-orange-800 font-semibold">
               Current Score: {formData.aptitudeScore}/{questions.length}
             </p>
           </div>
