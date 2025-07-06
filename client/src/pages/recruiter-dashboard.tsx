@@ -10,6 +10,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Application } from "@shared/schema";
+import TalencorLogo from "@/components/talencor-logo";
 import { 
   Users, 
   Home, 
@@ -75,23 +76,23 @@ export default function RecruiterDashboard() {
   // Email templates for different job types
   const emailTemplates = {
     general: {
-      subject: "Application Opportunity - TalentCore Staffing",
+      subject: "Application Opportunity - Talencor Staffing",
       message: "We have an exciting opportunity that matches your profile. Please complete your application using the secure link below."
     },
     warehouse: {
-      subject: "Warehouse Position Available - TalentCore Staffing",
+      subject: "Warehouse Position Available - Talencor Staffing",
       message: "We have warehouse positions available that offer competitive pay and benefits. Complete your application to get started with your new career."
     },
     manufacturing: {
-      subject: "Manufacturing Role - TalentCore Staffing",
+      subject: "Manufacturing Role - Talencor Staffing",
       message: "Join our manufacturing team! We're looking for dedicated individuals for immediate placement. Please fill out your application below."
     },
     construction: {
-      subject: "Construction Opportunity - TalentCore Staffing",
+      subject: "Construction Opportunity - Talencor Staffing",
       message: "Construction positions available with competitive wages and growth opportunities. Complete your application to join our team."
     },
     office: {
-      subject: "Office Position - TalentCore Staffing", 
+      subject: "Office Position - Talencor Staffing", 
       message: "Professional office positions available. We're seeking qualified candidates for immediate placement. Please complete your application."
     }
   };
@@ -325,9 +326,9 @@ export default function RecruiterDashboard() {
         <div className="px-4 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center">
-              <Users className={`${isMobile ? 'text-xl' : 'text-2xl'} text-primary mr-2`} />
+              <TalencorLogo variant="icon" className={`${isMobile ? 'h-8 w-8' : 'h-10 w-10'} mr-3`} />
               <h1 className={`${isMobile ? 'text-lg' : 'text-2xl'} font-bold text-gray-900`}>
-                {isMobile ? 'TalentCore' : 'Recruiter Dashboard'}
+                {isMobile ? 'Talencor' : 'Recruiter Dashboard'}
               </h1>
             </div>
             

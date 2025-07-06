@@ -2,15 +2,18 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, FileText, CheckCircle, Shield, Bus, ClipboardList, Brain } from "lucide-react";
+import TalencorLogo from "@/components/talencor-logo";
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
       <div className="container mx-auto px-4 py-16">
         <div className="text-center mb-16">
           <div className="mb-8">
-            <Users className="text-6xl text-primary mb-4 mx-auto" size={96} />
-            <h1 className="text-5xl font-bold text-gray-900 mb-6">Talencor Staffing</h1>
+            <div className="flex justify-center mb-6">
+              <TalencorLogo className="h-24" />
+            </div>
+            <h1 className="text-5xl font-bold text-gray-900 mb-6">Welcome to Talencor Staffing</h1>
             <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
               Building long-lasting relationships with reliable staffing solutions, 24 hours a day, 7 days a week
             </p>

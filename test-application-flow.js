@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Automated test for TalentCore application flow
+ * Automated test for Talencor application flow
  * Tests: Token generation, form validation, file upload, progress saving, and submission
  */
 
@@ -202,7 +202,7 @@ async function testFormValidation() {
 }
 
 async function runComprehensiveTest() {
-  console.log('🚀 Starting comprehensive TalentCore application flow test...');
+  console.log('🚀 Starting comprehensive Talencor application flow test...');
   console.log('=' .repeat(60));
   
   try {

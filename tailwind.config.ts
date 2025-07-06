@@ -11,6 +11,8 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       colors: {
+        "talencor-gold": "#F5A623",
+        "talencor-dark": "#1F2937",
         background: "var(--background)",
         foreground: "var(--foreground)",
         card: {
