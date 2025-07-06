@@ -85,35 +85,6 @@ The application is configured for multiple deployment scenarios:
 
 ## Changelog
 
-- July 6, 2025: Implemented new Talencor company logo and golden orange branding
-  - Replaced SVG-based logo component with actual company logo image (Design (1)_1751770740359.png)
-  - Updated entire color scheme from blue to golden orange to match logo colors:
-    - Primary colors: Orange 500 (#f97316) to Amber 600 (#d97706)
-    - Updated all CSS variables to golden orange palette (hsl(38, 90%, ...))
-    - Changed all hardcoded blue color classes to orange/amber equivalents
-  - Updated gradients, backgrounds, and accents across all pages
-  - Logo now displays the official hexagonal golden badge design
-  - Color updates applied to home page, recruiter dashboard, application form, and all components
-
-- July 4, 2025: Fixed recruiter dashboard data loading issues
-  - Fixed API query encoding for recruiter email parameter
-  - Added enabled condition to prevent queries without valid email
-  - Dashboard now properly displays applications and generated links
-  - Resolved "Recruiter email is required" API error
-
-- July 4, 2025: Company branding implementation with custom logo
-  - Created TalencorLogo React component featuring clean, modern design
-  - Integrated logo throughout application:
-    - Home page hero section
-    - Recruiter dashboard header
-    - Application form headers (both main form and submitted state)
-  - Updated all CSS color variables to use professional blue palette:
-    - Primary: Blue 600 (#2563eb)
-    - Background: Blue 50 (#eff6ff)
-    - Muted: Blue 100 (#dbeafe)
-  - Logo includes optional text display and responsive sizing (sm/md/lg)
-  - Note: Original vector logo files (.ai, .eps, .pdf) stored in talencorLogos directory
-
 - July 4, 2025: Company rebranding from TalentCore to Talencor
   - Updated all instances of "TalentCore" to "Talencor" throughout the application
   - Updated company tagline to reflect their mission: "Building long-lasting relationships with reliable staffing solutions, 24 hours a day, 7 days a week"

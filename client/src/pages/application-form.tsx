@@ -6,7 +6,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { FileText, Home, CheckCircle } from "lucide-react";
-import TalencorLogo from "@/components/talencor-logo";
 import ProgressBar from "@/components/application-form/progress-bar";
 import StepOne from "@/components/application-form/step-one";
 import StepTwo from "@/components/application-form/step-two";
@@ -212,57 +211,35 @@ export default function ApplicationForm() {
 
   if (isSubmitted) {
     return (
-      <div className="min-h-screen relative overflow-hidden">
-        {/* Animated Background */}
-        <div className="absolute inset-0 gradient-bg">
-          <div className="absolute inset-0 opacity-20">
-            <div className="absolute top-20 left-10 w-96 h-96 bg-green-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-float"></div>
-            <div className="absolute bottom-20 right-10 w-96 h-96 bg-green-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-float" style={{ animationDelay: '2s' }}></div>
-          </div>
-        </div>
-        
-        <div className="relative z-10 glass-effect shadow-lg border-b border-white/20">
-          <div className="container mx-auto px-4 py-6">
-            <div className="flex items-center justify-center">
-              <TalencorLogo size="lg" />
+      <div className="min-h-screen bg-gray-50">
+        <div className="bg-white shadow-sm border-b">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex items-center">
+              <FileText className="text-2xl text-primary mr-3" />
+              <h1 className="text-2xl font-bold text-gray-900">Employment Application</h1>
             </div>
           </div>
         </div>
 
-        <div className="relative z-10 container mx-auto px-4 py-16 max-w-4xl">
-          <Card className="modern-card text-center p-12 animate-fade-in">
+        <div className="container mx-auto px-4 py-8 max-w-4xl">
+          <Card className="text-center p-8">
             <CardContent className="pt-6">
-              <div className="mb-6 relative">
-                <div className="absolute inset-0 bg-green-400 rounded-full blur-3xl opacity-20"></div>
-                <CheckCircle className="relative text-green-600 mb-4 mx-auto animate-pulse-subtle" size={120} />
-              </div>
-              <h2 className="text-4xl font-bold text-gradient mb-4">Application Submitted Successfully!</h2>
-              <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+              <CheckCircle className="text-6xl text-success mb-4 mx-auto" size={96} />
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Application Submitted Successfully!</h2>
+              <p className="text-gray-600 mb-6">
                 Thank you for submitting your application. Our team will review your information and contact you within 2-3 business days.
               </p>
-              <div className="talencor-gradient-subtle p-6 rounded-xl text-left mb-8 border border-orange-200">
-                <h3 className="font-bold text-primary text-lg mb-3">What Happens Next:</h3>
-                <ul className="text-base text-foreground space-y-2">
-                  <li className="flex items-start">
-                    <CheckCircle className="h-5 w-5 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
-                    <span>You will receive a confirmation email shortly</span>
-                  </li>
-                  <li className="flex items-start">
-                    <CheckCircle className="h-5 w-5 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
-                    <span>Our recruitment team will review your application</span>
-                  </li>
-                  <li className="flex items-start">
-                    <CheckCircle className="h-5 w-5 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
-                    <span>We'll contact you if your profile matches our current opportunities</span>
-                  </li>
-                  <li className="flex items-start">
-                    <CheckCircle className="h-5 w-5 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
-                    <span>Keep an eye on your email for updates</span>
-                  </li>
+              <div className="bg-blue-50 p-4 rounded-lg text-left mb-6">
+                <h3 className="font-semibold text-blue-900 mb-2">Next Steps:</h3>
+                <ul className="text-sm text-blue-800 space-y-1">
+                  <li>• You will receive a confirmation email shortly</li>
+                  <li>• Our recruitment team will review your application</li>
+                  <li>• We'll contact you if your profile matches our current opportunities</li>
+                  <li>• Keep an eye on your email for updates</li>
                 </ul>
               </div>
-              <p className="text-sm text-muted-foreground">
-                You may now close this window or return to the home page.
+              <p className="text-sm text-gray-500">
+                You may now close this window.
               </p>
             </CardContent>
           </Card>
@@ -302,33 +279,20 @@ export default function ApplicationForm() {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Animated Background */}
-      <div className="absolute inset-0 gradient-bg">
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-40 left-20 w-72 h-72 bg-orange-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-float"></div>
-          <div className="absolute bottom-40 right-20 w-72 h-72 bg-amber-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-float" style={{ animationDelay: '3s' }}></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-orange-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-float" style={{ animationDelay: '6s' }}></div>
-        </div>
-      </div>
-      
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="relative z-10 glass-effect shadow-lg border-b border-white/20">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center justify-center">
-            <TalencorLogo size="md" />
-            <h1 className="text-3xl font-bold text-gradient ml-4">Employment Application</h1>
+      <div className="bg-white shadow-sm border-b">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center">
+            <FileText className="text-2xl text-primary mr-3" />
+            <h1 className="text-2xl font-bold text-gray-900">Employment Application</h1>
           </div>
         </div>
       </div>
 
-      <div className="relative z-10 container mx-auto px-4 py-8 max-w-4xl">
-        <div className="mb-8 animate-fade-in">
-          <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
-        </div>
-        <div className="animate-slide-up">
-          {renderCurrentStep()}
-        </div>
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
+        {renderCurrentStep()}
       </div>
     </div>
   );

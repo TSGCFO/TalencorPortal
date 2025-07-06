@@ -3,53 +3,28 @@
 @tailwind utilities;
 
 :root {
-  /* Brand Colors - Talencor Golden Orange Palette */
-  --talencor-50: hsl(38, 90%, 97%);
-  --talencor-100: hsl(38, 90%, 94%);
-  --talencor-200: hsl(38, 90%, 87%);
-  --talencor-300: hsl(38, 90%, 75%);
-  --talencor-400: hsl(38, 90%, 65%);
-  --talencor-500: hsl(38, 90%, 55%);
-  --talencor-600: hsl(38, 85%, 50%);
-  --talencor-700: hsl(35, 80%, 45%);
-  --talencor-800: hsl(33, 75%, 40%);
-  --talencor-900: hsl(30, 70%, 30%);
-  
-  /* System Colors */
   --background: hsl(0, 0%, 100%);
-  --foreground: hsl(30, 70%, 20%);
-  --muted: hsl(38, 90%, 97%);
-  --muted-foreground: hsl(35, 40%, 40%);
+  --foreground: hsl(20, 14.3%, 4.1%);
+  --muted: hsl(60, 4.8%, 95.9%);
+  --muted-foreground: hsl(25, 5.3%, 44.7%);
   --popover: hsl(0, 0%, 100%);
-  --popover-foreground: hsl(30, 70%, 20%);
+  --popover-foreground: hsl(20, 14.3%, 4.1%);
   --card: hsl(0, 0%, 100%);
-  --card-foreground: hsl(30, 70%, 20%);
-  --border: hsl(38, 30%, 92%);
-  --input: hsl(38, 30%, 92%);
-  --primary: hsl(35, 80%, 45%);
-  --primary-foreground: hsl(0, 0%, 100%);
-  --secondary: hsl(38, 85%, 50%);
-  --secondary-foreground: hsl(0, 0%, 100%);
-  --accent: hsl(38, 90%, 55%);
-  --accent-foreground: hsl(0, 0%, 100%);
+  --card-foreground: hsl(20, 14.3%, 4.1%);
+  --border: hsl(20, 5.9%, 90%);
+  --input: hsl(20, 5.9%, 90%);
+  --primary: hsl(217, 78%, 51%);
+  --primary-foreground: hsl(210, 40%, 98%);
+  --secondary: hsl(217, 78%, 41%);
+  --secondary-foreground: hsl(210, 40%, 98%);
+  --accent: hsl(60, 4.8%, 95.9%);
+  --accent-foreground: hsl(24, 9.8%, 10%);
   --destructive: hsl(0, 84.2%, 60.2%);
   --destructive-foreground: hsl(60, 9.1%, 97.8%);
   --success: hsl(142, 71%, 45%);
   --warning: hsl(38, 92%, 50%);
-  --ring: hsl(38, 90%, 55%);
+  --ring: hsl(20, 14.3%, 4.1%);
   --radius: 0.5rem;
-  
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  
-  /* Typography */
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-display: 'Poppins', 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 .dark {
@@ -88,188 +63,11 @@
 }
 
 @layer utilities {
-  /* Gradients */
   .gradient-bg {
-    background: linear-gradient(135deg, var(--talencor-50) 0%, white 50%, var(--talencor-100) 100%);
+    background: linear-gradient(135deg, hsl(217, 100%, 97%) 0%, hsl(217, 100%, 92%) 100%);
   }
 
-  .talencor-gradient {
-    background: linear-gradient(135deg, var(--talencor-700) 0%, var(--talencor-600) 50%, var(--talencor-500) 100%);
-  }
-  
-  .talencor-gradient-subtle {
-    background: linear-gradient(135deg, var(--talencor-100) 0%, var(--talencor-50) 100%);
-  }
-  
-  .glass-effect {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-  }
-  
-  .glass-effect-dark {
-    background: rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  /* Shadows */
   .card-shadow {
-    box-shadow: var(--shadow-md);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
-  
-  .card-shadow-hover {
-    box-shadow: var(--shadow-lg);
-  }
-  
-  .floating-shadow {
-    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.15);
-  }
-  
-  .inner-shadow {
-    box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
-  }
-
-  /* Animations */
-  .animate-float {
-    animation: float 6s ease-in-out infinite;
-  }
-  
-  .animate-pulse-subtle {
-    animation: pulse-subtle 3s ease-in-out infinite;
-  }
-  
-  .animate-gradient {
-    background-size: 200% 200%;
-    animation: gradient-shift 8s ease infinite;
-  }
-
-  /* Hover Effects */
-  .hover-lift {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-  
-  .hover-lift:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-xl);
-  }
-  
-  .hover-glow {
-    transition: box-shadow 0.3s ease;
-  }
-  
-  .hover-glow:hover {
-    box-shadow: 0 0 20px var(--talencor-400);
-  }
-
-  /* Text Effects */
-  .text-gradient {
-    background: linear-gradient(135deg, var(--talencor-700) 0%, var(--talencor-500) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  
-  .text-shadow-soft {
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-
-  /* Borders */
-  .border-gradient {
-    border-image: linear-gradient(135deg, var(--talencor-700), var(--talencor-500)) 1;
-  }
-  
-  .border-glow {
-    box-shadow: 0 0 0 1px var(--talencor-200);
-  }
-
-  /* Modern Card Styles */
-  .modern-card {
-    @apply bg-white rounded-xl card-shadow hover-lift border border-gray-100;
-  }
-  
-  .modern-card-primary {
-    @apply bg-gradient-to-br from-orange-500 to-amber-600 text-white rounded-xl card-shadow hover-lift;
-  }
-}
-
-/* Keyframes */
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-@keyframes pulse-subtle {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.8;
-  }
-}
-
-@keyframes gradient-shift {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-@keyframes fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(40px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Animation Classes */
-.animate-fade-in {
-  animation: fade-in 0.8s ease-out;
-}
-
-.animate-slide-up {
-  animation: slide-up 1s ease-out;
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--talencor-50);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--talencor-300);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--talencor-400);
 }
